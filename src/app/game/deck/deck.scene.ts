@@ -1,9 +1,9 @@
 import {Deck} from '@app/game/deck/deck.model';
 import {CardView} from '@app/game/card/card.view';
 import {Card} from '@app/game/card/card';
-import {Scene} from '@app/game/scene';
+import {Scene} from '@app/game/scene/scene';
 import {Key} from '@app/game/keyboard.event';
-import {SceneManager} from '@app/game/scene-manager';
+import {SceneManager} from '@app/game/scene/scene-manager';
 import Container = PIXI.Container;
 import Ticker = PIXI.ticker.Ticker;
 

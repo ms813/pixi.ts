@@ -1,7 +1,8 @@
 import Container = PIXI.Container;
 import Ticker = PIXI.ticker.Ticker;
-import {Key} from '@app/game/keyboard.event';
-import {SceneManager} from '@app/game/scene-manager';
+import DisplayObject = PIXI.DisplayObject;
+import {Key} from '../keyboard.event';
+import {SceneManager} from '@app/game/scene/scene-manager';
 
 export abstract class Scene {
 
@@ -41,5 +42,10 @@ export abstract class Scene {
         console.log('unbinding keys', this._keys);
         this._keys.forEach(e => e.unsubscribe());
         this.globalKeys.forEach(e => e.unsubscribe());
+    }
+
+    public addChild(...children: DisplayObject[]): Scene {
+        this.container.addChild(...children);
+        return this;
     }
 }

@@ -1,7 +1,5 @@
-import {Scene} from '@app/game/scene';
-import {Button} from '@app/game/ui/button';
-import {LevelMapGenerator} from '@app/game/map/level-map.generator';
-import {LevelMap} from '@app/game/map/level-map.model';
+import {Scene} from '../scene';
+import {Button} from '../../ui/button';
 import Ticker = PIXI.ticker.Ticker;
 import Container = PIXI.Container;
 
@@ -19,9 +17,6 @@ export class DebugScene extends Scene {
             () => console.log('Debug button::out')
         );
 
-        this.container.addChild(debugButton);
-
-        const map: LevelMap = new LevelMapGenerator().height(4).width(4).build();
-        console.log('map:', map);
+        this.container.addChild(debugButton.container);
     }
 }

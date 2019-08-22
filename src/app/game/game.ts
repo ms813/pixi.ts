@@ -2,23 +2,31 @@ import {Application, loader} from 'pixi.js';
 import {Character} from '@app/character.class';
 import {DeckScene} from '@app/game/deck/deck.scene';
 import {Deck} from '@app/game/deck/deck.model';
-import {SceneManager} from '@app/game/scene-manager';
-import {Menu} from '@app/game/menu.scene';
-import {DebugScene} from '@app/game/debug.scene';
+import {SceneManager} from '@app/game/scene/scene-manager';
+import {Menu} from '@app/game/scene/scenes/menu.scene';
+import {DebugScene} from '@app/game/scene/scenes/debug.scene';
+import {MapTestScene} from '@app/game/scene/scenes/map-test.scene';
+import {Scene} from '@app/game/scene/scene';
 import Container = PIXI.Container;
 
 export class Game {
 
     constructor(private app: Application) {
-        // preload needed assets
-        loader.add('samir', '/assets/img/hero.png');
+        this.loadAssets();
 
-        // then launch app
         loader.load(this.setup.bind(this));
         SceneManager.init(this.app);
     }
 
     setup(): void {
+        SceneManager.addScene(new DebugScene('debug'));
+        SceneManager.addScene(new Menu('menu'));
+        SceneManager.addScene(new MapTestScene('map_test'));
+
+        SceneManager.goToScene('map_test');
+    }
+
+    private buildDeckScene(): Scene {
         const cards = [
             {name: 'A'},
             {name: 'B'},
@@ -27,11 +35,7 @@ export class Game {
         ];
 
         const deck = new Deck(cards);
-
-        const entryScene = SceneManager.addScene(new DeckScene('test-deck-view', deck));
-        SceneManager.addScene(new DebugScene('debug'));
-        SceneManager.addScene(new Menu('menu'));
-
+        const deckScene = SceneManager.addScene(new DeckScene('test-deck-scene', deck));
         // append hero
         const hero = new Character(loader.resources['samir'].texture);
         const heroSprite = hero.sprite;
@@ -42,7 +46,7 @@ export class Game {
 
         //  animate hero
         let moveLeft = true;
-        entryScene.ticker.add(() => {
+        deckScene.ticker.add(() => {
             const speed = 2;
             if (heroSprite.x < this.app.view.width && moveLeft) {
                 heroSprite.x += speed;
@@ -51,8 +55,9 @@ export class Game {
                 moveLeft = heroSprite.x <= 0;
             }
         });
-        entryScene.container.addChild(testAnimation);
-        SceneManager.goToScene('test-deck-view');
+        deckScene.container.addChild(testAnimation);
+        // SceneManager.goToScene('test-deck-scene');
+        return deckScene;
     }
 
     private paused: boolean = false;
@@ -65,5 +70,11 @@ export class Game {
             this.app.ticker.start();
         }
         return this.paused;
+    }
+
+    private loadAssets() {
+        loader.add('samir', '/assets/img/hero.png');
+        loader.add('button', 'assets/ui/button.json');
+        loader.add('map_tiles', '/assets/map/map_tiles.json');
     }
 }

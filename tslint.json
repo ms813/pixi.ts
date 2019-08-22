@@ -3,6 +3,7 @@
     "tslint:recommended"
   ],
   "rules": {
+    "noUnusedLocals": false,
     "max-classes-per-file": [true, 1],
     "ordered-imports": [
       true,

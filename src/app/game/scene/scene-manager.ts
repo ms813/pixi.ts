@@ -1,5 +1,5 @@
 import Application = PIXI.Application;
-import {Scene} from '@app/game/scene';
+import {Scene} from '@app/game/scene/scene';
 
 export class SceneManager {
 
@@ -21,11 +21,11 @@ export class SceneManager {
             SceneManager.scenes[id] = scene;
         }
 
-        if(!SceneManager.currentScene){
+        if (!SceneManager.currentScene) {
             SceneManager.currentScene = scene;
         }
 
-        if(!SceneManager.lastScene){
+        if (!SceneManager.lastScene) {
             SceneManager.lastScene = scene;
         }
 
@@ -56,7 +56,7 @@ export class SceneManager {
 
         SceneManager.lastScene = SceneManager.currentScene;
         SceneManager.currentScene = requestedScene;
-        console.log(`Scene swapped successfully. Current scene: ${SceneManager.currentScene.id}. Last scene: ${SceneManager.lastScene.id}`)
+        console.log(`Scene swapped successfully. Current scene: ${SceneManager.currentScene.id}. Last scene: ${SceneManager.lastScene.id}`);
 
         return requestedScene;
     }

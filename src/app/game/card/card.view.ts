@@ -29,7 +29,6 @@ export class CardView extends Container {
         border.interactive = true;
         border.hitArea = new Rectangle(0, 0, 100, 100);
         border.mouseover = (e: InteractionData) => console.log(`Moused over card: ${card.name}`);
-
         this.nameText = new Text(card.name, this.options);
 
         this.addChild(border);
