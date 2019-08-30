@@ -33,7 +33,7 @@ export class SceneManager {
     }
 
     public static goToScene(id: string): Scene {
-        console.log(`SceneManager:: Changing Scene ${id}`);
+        console.debug(`SceneManager:: Start changing Scene ${id}`);
 
         const requestedScene = SceneManager.scenes[id];
         if (!requestedScene) {
@@ -46,7 +46,7 @@ export class SceneManager {
         SceneManager.app.ticker.start();
 
         if (SceneManager.currentScene) {
-            console.log(`pausing scene: ${id}`);
+            console.log(`SceneManager:: pausing scene: ${id}`);
             this.app.stage.removeChild(SceneManager.currentScene.container);
             SceneManager.currentScene.unbindKeys();
         }

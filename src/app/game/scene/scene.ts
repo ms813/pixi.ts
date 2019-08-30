@@ -28,18 +28,18 @@ export abstract class Scene {
     }
 
     protected set keys(keys: Key[]) {
-        console.log('setting keybindings', keys);
+        console.debug('setting keybindings', keys);
         this._keys = keys;
     }
 
     public bindKeys(): void {
-        console.log('binding scene-specific keys', this._keys);
+        console.debug('binding scene-specific keys', this._keys);
         this._keys.forEach(e => e.subscribe());
         this.globalKeys.forEach(e => e.subscribe());
     }
 
     public unbindKeys(): void {
-        console.log('unbinding keys', this._keys);
+        console.debug('unbinding keys', this._keys);
         this._keys.forEach(e => e.unsubscribe());
         this.globalKeys.forEach(e => e.unsubscribe());
     }

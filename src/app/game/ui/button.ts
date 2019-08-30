@@ -30,7 +30,7 @@ export class Button {
         this.resources = loader.resources['button'];
 
         this.container = new Container();
-        console.log(loader.resources);
+        console.debug(loader.resources);
         this.sprite = new Sprite(this.resources.textures['button_up.png']);
         this.addChild(this.sprite);
 

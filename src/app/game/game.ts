@@ -1,5 +1,4 @@
 import {Application, loader} from 'pixi.js';
-import {Character} from '@app/character.class';
 import {DeckScene} from '@app/game/deck/deck.scene';
 import {Deck} from '@app/game/deck/deck.model';
 import {SceneManager} from '@app/game/scene/scene-manager';
@@ -9,10 +8,12 @@ import {MapTestScene} from '@app/game/scene/scenes/map-test.scene';
 import {Scene} from '@app/game/scene/scene';
 import Container = PIXI.Container;
 
+export const TILE_WIDTH: number = 32;
+
 export class Game {
 
     constructor(private app: Application) {
-        this.loadAssets();
+        Game.loadAssets();
 
         loader.load(this.setup.bind(this));
         SceneManager.init(this.app);
@@ -37,24 +38,9 @@ export class Game {
         const deck = new Deck(cards);
         const deckScene = SceneManager.addScene(new DeckScene('test-deck-scene', deck));
         // append hero
-        const hero = new Character(loader.resources['samir'].texture);
-        const heroSprite = hero.sprite;
 
         const testAnimation = new Container();
-        testAnimation.addChild(heroSprite);
-        heroSprite.y = 300;
 
-        //  animate hero
-        let moveLeft = true;
-        deckScene.ticker.add(() => {
-            const speed = 2;
-            if (heroSprite.x < this.app.view.width && moveLeft) {
-                heroSprite.x += speed;
-            } else {
-                heroSprite.x -= speed;
-                moveLeft = heroSprite.x <= 0;
-            }
-        });
         deckScene.container.addChild(testAnimation);
         // SceneManager.goToScene('test-deck-scene');
         return deckScene;
@@ -72,9 +58,9 @@ export class Game {
         return this.paused;
     }
 
-    private loadAssets() {
-        loader.add('samir', '/assets/img/hero.png');
+    private static loadAssets() {
         loader.add('button', 'assets/ui/button.json');
         loader.add('map_tiles', '/assets/map/map_tiles.json');
+        loader.add('player', '/assets/player.png');
     }
 }

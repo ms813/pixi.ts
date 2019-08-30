@@ -3,22 +3,23 @@ export class Key {
     public release: () => void;
     public subscribe: () => void;
     public unsubscribe: () => void;
-    private value: string;
+    private code: string;
     private isDown: boolean;
     private isUp:boolean;
     private downHandler: (event:any) => void;
     private upHandler: (event:any) => void;
 
-    public static create(value: string): Key {
+    public static create(code: string, press?: () => void): Key {
         const key: Key = new Key();
-        key.value = value;
+
+        key.code = code;
         key.isDown = false;
         key.isUp = true;
-        key.press = undefined;
+        key.press = press;
         key.release = undefined;
 
         key.downHandler = (event: any) => {
-            if (event.key === key.value) {
+            if (event.code === key.code) {
                 if (key.isUp && key.press) key.press();
                 key.isDown = true;
                 key.isUp = false;
@@ -27,7 +28,8 @@ export class Key {
         };
 
         key.upHandler = (event: any) => {
-            if (event.key === key.value) {
+
+            if (event.code === key.code) {
                 if (key.isDown && key.release) key.release();
                 key.isDown = false;
                 key.isUp = true;

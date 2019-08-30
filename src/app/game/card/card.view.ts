@@ -23,11 +23,12 @@ export class CardView extends Container {
         this.y = y;
 
         const border: Graphics = new Graphics();
-        console.log(`${card.name}: (${x}, ${y})`);
+        console.debug(`CardView:: ${card.name}: (${x}, ${y})`);
         border.lineStyle(1, 0x000000);
         border.drawRect(0, 0, 100, 100);
         border.interactive = true;
         border.hitArea = new Rectangle(0, 0, 100, 100);
+        //@ts-ignore
         border.mouseover = (e: InteractionData) => console.log(`Moused over card: ${card.name}`);
         this.nameText = new Text(card.name, this.options);
 
