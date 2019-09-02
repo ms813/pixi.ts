@@ -70,10 +70,10 @@ export class Game {
     }
 
     public static get width(): number {
-        return 800;
+        return 1080;
     }
 
     public static get height(): number {
-        return 640;
+        return 720;
     }
 }

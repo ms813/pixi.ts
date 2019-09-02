@@ -44,7 +44,7 @@ export class MapTestScene extends Scene {
 
         // const drawTimer = setInterval(() => {
         //     const {drawPile, hand, discardPile} = this.player;
-        //     console.log(`Before draw - draw: ${drawPile.length}, hand: ${hand.length}, discard: ${discardPile.length}`);
+        //     console.debug(`Before draw - draw: ${drawPile.length}, hand: ${hand.length}, discard: ${discardPile.length}`);
         //     this.player.draw();
         // }, 200);
         // const draw = () => {
