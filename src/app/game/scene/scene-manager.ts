@@ -4,7 +4,7 @@ import {Scene} from '@app/game/scene/scene';
 export class SceneManager {
 
     public static currentScene: Scene;
-    public static lastScene: Scene;
+    public static previousScene: Scene;
 
     private static scenes: { [key: string]: Scene } = {};
     private static app: Application;
@@ -13,9 +13,9 @@ export class SceneManager {
         this.app = app;
     }
 
-    public static addScene(scene: Scene): Scene {
+    public static addScene(scene: Scene, options?: {overwrite: boolean}): Scene {
         const id: string = scene.id;
-        if (SceneManager.scenes[id]) {
+        if (SceneManager.scenes[id] && !options.overwrite) {
             console.warn(`Scene with ID: ${id} already exists!`);
         } else {
             SceneManager.scenes[id] = scene;
@@ -25,8 +25,8 @@ export class SceneManager {
             SceneManager.currentScene = scene;
         }
 
-        if (!SceneManager.lastScene) {
-            SceneManager.lastScene = scene;
+        if (!SceneManager.previousScene) {
+            SceneManager.previousScene = scene;
         }
 
         return SceneManager.scenes[id];
@@ -54,10 +54,19 @@ export class SceneManager {
         this.app.stage.addChild(requestedScene.container);
         requestedScene.bindKeys();
 
-        SceneManager.lastScene = SceneManager.currentScene;
+        SceneManager.previousScene = SceneManager.currentScene;
         SceneManager.currentScene = requestedScene;
-        console.log(`Scene swapped successfully. Current scene: ${SceneManager.currentScene.id}. Last scene: ${SceneManager.lastScene.id}`);
+        console.log(`Scene swapped successfully. Current scene: ${SceneManager.currentScene.id}. Previous scene: ${SceneManager.previousScene.id}`);
 
         return requestedScene;
+    }
+
+    public static hasScene(id: string): boolean {
+        return !!SceneManager.scenes[id];
+    }
+
+    public static goToPreviousScene() {
+        SceneManager.goToScene(SceneManager.previousScene.id);
+        console.debug('SceneManager::goToPreviousScene - Swapped current scene and previous scene');
     }
 }

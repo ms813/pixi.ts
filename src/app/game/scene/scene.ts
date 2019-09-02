@@ -17,7 +17,7 @@ export abstract class Scene {
         const debugKey = Key.create('Backquote');
         debugKey.press = () => {
             if (SceneManager.currentScene.id === 'debug') {
-                SceneManager.goToScene(SceneManager.lastScene.id);
+                SceneManager.goToScene(SceneManager.previousScene.id);
             } else {
                 SceneManager.goToScene('debug');
             }

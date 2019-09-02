@@ -17,6 +17,6 @@ export class DebugScene extends Scene {
             () => console.log('Debug button::out')
         );
 
-        this.container.addChild(debugButton.container);
+        this.container.addChild(debugButton);
     }
 }

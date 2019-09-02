@@ -10,7 +10,7 @@ import {HandView} from '@app/game/deck/hand.view';
 import Ticker = PIXI.ticker.Ticker;
 import Container = PIXI.Container;
 
-export class MapTestScene extends Scene {
+export class LevelTestScene extends Scene {
     private player: Player;
     private map: LevelMap;
 
@@ -41,25 +41,18 @@ export class MapTestScene extends Scene {
         this.player.onDraw = [handView.draw];
         this.player.onDiscard = [handView.discard];
 
-
-        // const drawTimer = setInterval(() => {
-        //     const {drawPile, hand, discardPile} = this.player;
-        //     console.debug(`Before draw - draw: ${drawPile.length}, hand: ${hand.length}, discard: ${discardPile.length}`);
-        //     this.player.draw();
-        // }, 200);
-        // const draw = () => {
-        //     const {drawPile, hand, discardPile} = this.player;
-        //     console.log(`Before draw - draw: ${drawPile.length}, hand: ${hand.length}, discard: ${discardPile.length}`);
-        //     this.player.draw();
-        //
-        //     // keep drawing until no cards left in draw pile
-        //     if (this.player.drawPile.length > 0) {
-        //         console.log('clearing draw interval');
-        //         setTimeout(draw, 1000);
-        //     }
-        // };
-        //
-        // setTimeout(draw, 1000);
+        //draw some cards to test the deck
+        const drawTimeoutMillis: number = 1000;
+        let millisLeftUntilDraw: number = drawTimeoutMillis;
+        this.ticker.add((delta: number) => {
+            if (millisLeftUntilDraw <= 0) {
+                const {drawPile, hand, discardPile} = this.player;
+                console.debug(`Before draw - draw: ${drawPile.length}, hand: ${hand.length}, discard: ${discardPile.length}`);
+                this.player.draw();
+                millisLeftUntilDraw = drawTimeoutMillis;
+            }
+            millisLeftUntilDraw -= this.ticker.elapsedMS;
+        });
 
         this.keys = this.getKeybindings();
     }

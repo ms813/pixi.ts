@@ -16,7 +16,7 @@ export class Player extends Movable {
 
     private _moveSpeed: number = 100;
 
-    private maxHandSize: number = 5;
+    public maxHandSize: number = 5;
 
     public onDraw: ((...cards: Card[]) => void)[];
     public onDiscard: ((...cards: Card[]) => void)[];

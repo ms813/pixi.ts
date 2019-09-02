@@ -2,15 +2,13 @@ import Container = PIXI.Container;
 import Sprite = PIXI.Sprite;
 import Text = PIXI.Text;
 import TextStyleOptions = PIXI.TextStyleOptions;
-import DisplayObject = PIXI.DisplayObject;
 import loader = PIXI.loader;
 import Resource = PIXI.loaders.Resource;
 
-export class Button {
+export class Button extends Container {
 
     private sprite: Sprite;
     private resources: Resource;
-    public container: Container;
 
     private readonly textStyleOptions: TextStyleOptions = {
         fontFamily: 'Arial',
@@ -22,55 +20,31 @@ export class Button {
         private text: string,
         x: number,
         y: number,
-        private onDown: any,
-        private onUp: any,
-        private onOver: any,
-        private onOut: any
+        private onDown: Function = () => {},
+        private onUp: Function = () => {},
+        private onOver: Function = () => {},
+        private onOut: Function = () => {}
     ) {
+        super();
         this.resources = loader.resources['button'];
 
-        this.container = new Container();
         console.debug(loader.resources);
         this.sprite = new Sprite(this.resources.textures['button_up.png']);
         this.addChild(this.sprite);
 
         const textView = new Text(text, this.textStyleOptions);
         textView.anchor.set(0.5);
-        textView.x = this.container.width / 2;
-        textView.y = this.container.height / 2;
+        textView.x = this.width / 2;
+        textView.y = this.height / 2;
         this.addChild(textView);
 
 
         this.x = x;
         this.y = y;
-        this.container.interactive = true;
-        this.container.buttonMode = true;
+        this.interactive = true;
+        this.buttonMode = true;
 
         this.bindButtonCallbacks();
-    }
-
-    public get x() {
-        return this.container.x;
-    }
-
-    public get y() {
-        return this.container.y;
-    }
-
-    public set x(x: number) {
-        this.container.x = x;
-    }
-
-    public set y(y: number) {
-        this.container.y = y;
-    }
-
-    public addChild(...children: DisplayObject[]): DisplayObject {
-        return this.container.addChild(...children);
-    }
-
-    public on(event: string | symbol, fn: (...args: any[]) => any, context?: any): DisplayObject {
-        return this.container.on(event, fn, context);
     }
 
     bindButtonCallbacks() {

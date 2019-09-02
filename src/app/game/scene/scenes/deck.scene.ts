@@ -4,9 +4,10 @@ import {Card} from '../../card/card';
 import {Scene} from '../scene';
 import {Key} from '../../keyboard.event';
 import {SceneManager} from '../scene-manager';
+import {Button} from '@app/game/ui/button';
+import {Game} from '@app/game/game';
 import Container = PIXI.Container;
 import Ticker = PIXI.ticker.Ticker;
-
 
 export class DeckScene extends Scene {
 
@@ -18,8 +19,17 @@ export class DeckScene extends Scene {
     ) {
         super(id, new Container(), new Ticker());
         this.keys = this.getKeybindings();
-        this.cardViews = deck.cards.map((card: Card, i: number) => new CardView(card, i * 100, 100));
+        this.cardViews = deck.cards.map((card: Card, i: number) => new CardView(card, i * CardView.width, CardView.height));
         this.cardViews.forEach(cardView => this.container.addChild(cardView));
+
+        const button: Button = new Button(
+            'Back',
+            Game.width / 2 - 16,
+            2 * Game.height / 3,
+            SceneManager.goToPreviousScene
+        );
+
+        this.addChild(button)
     }
 
     private getKeybindings(): Key[] {

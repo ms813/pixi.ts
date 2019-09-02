@@ -4,7 +4,7 @@ import {Deck} from '@app/game/deck/deck';
 import {SceneManager} from '@app/game/scene/scene-manager';
 import {Menu} from '@app/game/scene/scenes/menu.scene';
 import {DebugScene} from '@app/game/scene/scenes/debug.scene';
-import {MapTestScene} from '@app/game/scene/scenes/map-test.scene';
+import {LevelTestScene} from '@app/game/scene/scenes/level-test.scene';
 import {Scene} from '@app/game/scene/scene';
 import Container = PIXI.Container;
 import {Card} from '@app/game/card/card';
@@ -27,7 +27,7 @@ export class Game {
     setup(): void {
         SceneManager.addScene(new DebugScene('debug'));
         SceneManager.addScene(new Menu('menu'));
-        SceneManager.addScene(new MapTestScene('map_test'));
+        SceneManager.addScene(new LevelTestScene('map_test'));
 
         SceneManager.goToScene('map_test');
     }
