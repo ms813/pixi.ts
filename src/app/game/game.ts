@@ -1,18 +1,23 @@
 import {Application, loader} from 'pixi.js';
-import {DeckScene} from '@app/game/deck/deck.scene';
-import {Deck} from '@app/game/deck/deck.model';
+import {DeckScene} from '@app/game/scene/scenes/deck.scene';
+import {Deck} from '@app/game/deck/deck';
 import {SceneManager} from '@app/game/scene/scene-manager';
 import {Menu} from '@app/game/scene/scenes/menu.scene';
 import {DebugScene} from '@app/game/scene/scenes/debug.scene';
 import {MapTestScene} from '@app/game/scene/scenes/map-test.scene';
 import {Scene} from '@app/game/scene/scene';
 import Container = PIXI.Container;
+import {Card} from '@app/game/card/card';
 
 export const TILE_WIDTH: number = 32;
 
 export class Game {
 
-    constructor(private app: Application) {
+    private app: Application;
+
+    public init(app: Application) {
+        this.app = app;
+
         Game.loadAssets();
 
         loader.load(this.setup.bind(this));
@@ -29,10 +34,10 @@ export class Game {
 
     private buildDeckScene(): Scene {
         const cards = [
-            {name: 'A'},
-            {name: 'B'},
-            {name: 'C'},
-            {name: 'D'}
+            new Card('A'),
+            new Card('B'),
+            new Card('C'),
+            new Card('D'),
         ];
 
         const deck = new Deck(cards);
@@ -62,5 +67,13 @@ export class Game {
         loader.add('button', 'assets/ui/button.json');
         loader.add('map_tiles', '/assets/map/map_tiles.json');
         loader.add('player', '/assets/player.png');
+    }
+
+    public static get width(): number {
+        return 800;
+    }
+
+    public static get height(): number {
+        return 640;
     }
 }

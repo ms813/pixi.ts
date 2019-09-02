@@ -9,14 +9,17 @@ import {Card} from '@app/game/card/card';
 export class CardView extends Container {
 
     private nameText: Text;
+    public static readonly width: number = 96;
+    public static readonly height: number = 128;
 
-    private readonly options: TextStyleOptions = {
+    private readonly textStyleOptions: TextStyleOptions = {
         fontFamily: 'Arial',
-        fontSize: 24,
+        fontSize: 14,
         fill: 0x000000
     };
 
-    constructor(private card: Card, x: number, y: number) {
+
+    constructor(private card: Card, x: number = 0, y: number = 0) {
         super();
 
         this.x = x;
@@ -30,7 +33,7 @@ export class CardView extends Container {
         border.hitArea = new Rectangle(0, 0, 100, 100);
         //@ts-ignore
         border.mouseover = (e: InteractionData) => console.log(`Moused over card: ${card.name}`);
-        this.nameText = new Text(card.name, this.options);
+        this.nameText = new Text(card.name, this.textStyleOptions);
 
         this.addChild(border);
         this.addChild(this.nameText);

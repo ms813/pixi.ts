@@ -14,7 +14,7 @@ export abstract class Scene {
         public readonly container: Container,
         public readonly ticker: Ticker
     ) {
-        const debugKey = Key.create('`');
+        const debugKey = Key.create('Backquote');
         debugKey.press = () => {
             if (SceneManager.currentScene.id === 'debug') {
                 SceneManager.goToScene(SceneManager.lastScene.id);
@@ -24,7 +24,6 @@ export abstract class Scene {
         };
 
         this.globalKeys.push(debugKey);
-
     }
 
     protected set keys(keys: Key[]) {
@@ -33,8 +32,10 @@ export abstract class Scene {
     }
 
     public bindKeys(): void {
-        console.debug('binding scene-specific keys', this._keys);
+        console.debug('Scene::bindKeys binding scene-specific keys', this._keys);
         this._keys.forEach(e => e.subscribe());
+
+        console.debug('Scene::bindKeys binding global keys');
         this.globalKeys.forEach(e => e.subscribe());
     }
 

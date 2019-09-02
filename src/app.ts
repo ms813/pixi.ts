@@ -1,9 +1,11 @@
 import {Game} from '@app/game/game';
 import {Application} from 'pixi.js';
 
+export const game = new Game();
+
 const app: Application = new Application({
-    width: 800,
-    height: 600,
+    width: Game.width,
+    height: Game.height,
     backgroundColor: 0x1099bb,
     sharedTicker: false
 });
@@ -11,4 +13,6 @@ const app: Application = new Application({
 // create view in DOM
 document.body.appendChild(app.view);
 
-new Game(app);
+game.init(app);
+
+

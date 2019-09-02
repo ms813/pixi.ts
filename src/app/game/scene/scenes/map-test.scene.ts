@@ -2,10 +2,11 @@ import {Scene} from '@app/game/scene/scene';
 import {LevelMap} from '@app/game/map/level-map';
 import {LevelMapGenerator} from '@app/game/map/level-map.generator';
 import {Key} from '@app/game/keyboard.event';
-import {Player} from '@app/game/player/player';
+import {Player} from '@app/game/actor/player';
 import {Card} from '@app/game/card/card';
-import {Deck} from '@app/game/deck/deck.model';
+import {Deck} from '@app/game/deck/deck';
 import {Direction} from '@app/game/direction.enum';
+import {HandView} from '@app/game/deck/hand.view';
 import Ticker = PIXI.ticker.Ticker;
 import Container = PIXI.Container;
 
@@ -25,14 +26,40 @@ export class MapTestScene extends Scene {
 
         this.addChild(this.map);
 
-        const cards = [
-            new Card('test-card')
-        ];
+        const cards = [];
+        for (let i = 0; i < 10; i++) {
+            cards.push(new Card(`test-card-${i}`));
+        }
 
         this.player = new Player(new Deck(cards));
         this.player.x = 1;
         this.player.y = 1;
         this.addChild(this.player.sprite);
+
+        const handView: HandView = new HandView(this.player);
+        this.addChild(handView);
+        this.player.onDraw = [handView.draw];
+        this.player.onDiscard = [handView.discard];
+
+
+        // const drawTimer = setInterval(() => {
+        //     const {drawPile, hand, discardPile} = this.player;
+        //     console.log(`Before draw - draw: ${drawPile.length}, hand: ${hand.length}, discard: ${discardPile.length}`);
+        //     this.player.draw();
+        // }, 200);
+        // const draw = () => {
+        //     const {drawPile, hand, discardPile} = this.player;
+        //     console.log(`Before draw - draw: ${drawPile.length}, hand: ${hand.length}, discard: ${discardPile.length}`);
+        //     this.player.draw();
+        //
+        //     // keep drawing until no cards left in draw pile
+        //     if (this.player.drawPile.length > 0) {
+        //         console.log('clearing draw interval');
+        //         setTimeout(draw, 1000);
+        //     }
+        // };
+        //
+        // setTimeout(draw, 1000);
 
         this.keys = this.getKeybindings();
     }
