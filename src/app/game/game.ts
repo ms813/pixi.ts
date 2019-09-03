@@ -8,12 +8,14 @@ import {LevelTestScene} from '@app/game/scene/scenes/level-test.scene';
 import {Scene} from '@app/game/scene/scene';
 import Container = PIXI.Container;
 import {Card} from '@app/game/card/card';
+import {TurnClock} from '@app/game/turnclock';
 
 export const TILE_WIDTH: number = 32;
 
 export class Game {
 
     private app: Application;
+    static turnClock: TurnClock = new TurnClock();
 
     public init(app: Application) {
         this.app = app;

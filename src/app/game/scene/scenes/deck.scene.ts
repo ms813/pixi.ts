@@ -36,7 +36,7 @@ export class DeckScene extends Scene {
         const left = Key.create('ArrowLeft');
         left.press = () => console.log('left');
 
-        const space = Key.create(' ');
+        const space = Key.create('Space');
         space.press = () => SceneManager.goToScene('menu');
 
         return [left, space];

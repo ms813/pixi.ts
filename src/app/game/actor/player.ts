@@ -1,6 +1,8 @@
 import {Deck} from '../deck/deck';
 import {Movable} from '@app/game/actor/movable';
 import {Card} from '@app/game/card/card';
+import {Game} from '@app/game/game';
+import {Direction} from '@app/game/direction.enum';
 import Sprite = PIXI.Sprite;
 import loader = PIXI.loader;
 
@@ -13,8 +15,6 @@ export class Player extends Movable {
 
     private _drawCooldown: number;
     private _currentDrawCooldown: number;
-
-    private _moveSpeed: number = 100;
 
     public maxHandSize: number = 5;
 
@@ -38,6 +38,13 @@ export class Player extends Movable {
         this.sprite = new Sprite(loader.resources['player'].texture);
     }
 
+    public doTurn(): Player {
+        console.debug('Player::doTurn - turn start');
+        Game.turnClock.scheduleTurn(this, this._moveSpeed);
+        Game.turnClock.nextTurn();
+        return this;
+    }
+
     public draw(): Card[] {
 
         if (this.drawPile.length === 0 && this.discardPile.length === 0) {
@@ -50,7 +57,7 @@ export class Player extends Movable {
             this.shuffleDiscardIntoDraw();
         }
 
-             // Hand is full, move the oldest card to discard
+        // Hand is full, move the oldest card to discard
         if (this.hand.length >= this.maxHandSize) {
             const cardsToDiscard: Card[] = this.hand.shift();
             this.discardPile.push(...cardsToDiscard);
@@ -63,6 +70,12 @@ export class Player extends Movable {
         this.hand.push(...newlyDrawnCards);
 
         return newlyDrawnCards;
+    }
+
+    move(direction: Direction, isLegalMove: boolean): { x: number, y: number } {
+        const movePos = super.move(direction, isLegalMove);
+        this.doTurn();
+        return movePos;
     }
 
     get drawPile(): Deck {

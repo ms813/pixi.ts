@@ -2,9 +2,10 @@ import {Direction} from '@app/game/direction.enum';
 import {TILE_WIDTH} from '@app/game/game';
 import Sprite = PIXI.Sprite;
 
-export class Movable {
+export abstract class Movable {
 
     private _sprite: Sprite;
+    protected _moveSpeed: number = 100;
 
     public static readonly moveFnMap: { [key: string]: (m: Movable) => void } = {
         [Direction.N]: (m: Movable) => --m.y,
@@ -28,6 +29,8 @@ export class Movable {
             --m.y;
         }
     };
+
+    abstract doTurn(): Movable;
 
     move(direction: Direction, isLegalMove: boolean) {
         if (isLegalMove) {

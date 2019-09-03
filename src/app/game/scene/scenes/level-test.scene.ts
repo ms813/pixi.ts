@@ -7,12 +7,15 @@ import {Card} from '@app/game/card/card';
 import {Deck} from '@app/game/deck/deck';
 import {Direction} from '@app/game/direction.enum';
 import {HandView} from '@app/game/deck/hand.view';
+import {Enemy} from '@app/game/actor/enemy';
+import {Game} from '@app/game/game';
 import Ticker = PIXI.ticker.Ticker;
 import Container = PIXI.Container;
 
 export class LevelTestScene extends Scene {
     private player: Player;
     private map: LevelMap;
+    private enemies: Enemy[] = [];
 
     constructor(id: string) {
         super(id, new Container(), new Ticker());
@@ -41,18 +44,26 @@ export class LevelTestScene extends Scene {
         this.player.onDraw = [handView.draw];
         this.player.onDiscard = [handView.discard];
 
-        //draw some cards to test the deck
-        const drawTimeoutMillis: number = 1000;
-        let millisLeftUntilDraw: number = drawTimeoutMillis;
-        this.ticker.add((delta: number) => {
-            if (millisLeftUntilDraw <= 0) {
-                const {drawPile, hand, discardPile} = this.player;
-                console.debug(`Before draw - draw: ${drawPile.length}, hand: ${hand.length}, discard: ${discardPile.length}`);
-                this.player.draw();
-                millisLeftUntilDraw = drawTimeoutMillis;
-            }
-            millisLeftUntilDraw -= this.ticker.elapsedMS;
-        });
+        // Game.turnClock.scheduleTurn(this.player, 1);
+        this.enemies.forEach((e: Enemy) => Game.turnClock.scheduleTurn(e, 2));
+
+        // // draw some cards to test the deck
+        // const drawTimeoutMillis: number = 1000;
+        // let millisLeftUntilDraw: number = drawTimeoutMillis;
+        // this.ticker.add((delta: number) => {
+        //     if (millisLeftUntilDraw <= 0) {
+        //         const {drawPile, hand, discardPile} = this.player;
+        //         console.debug(`Before draw - draw: ${drawPile.length}, hand: ${hand.length}, discard: ${discardPile.length}`);
+        //         this.player.draw();
+        //         millisLeftUntilDraw = drawTimeoutMillis;
+        //     }
+        //     millisLeftUntilDraw -= this.ticker.elapsedMS;
+        // });
+
+        // put some cards in the players hand to start
+        while (this.player.hand.length < 3) {
+            this.player.draw();
+        }
 
         this.keys = this.getKeybindings();
     }
