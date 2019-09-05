@@ -7,6 +7,8 @@ export abstract class Movable {
     private _sprite: Sprite;
     protected _moveSpeed: number = 100;
 
+    protected constructor(public readonly id:string){}
+
     public static readonly moveFnMap: { [key: string]: (m: Movable) => void } = {
         [Direction.N]: (m: Movable) => --m.y,
         [Direction.NE]: (m: Movable) => {

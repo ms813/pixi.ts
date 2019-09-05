@@ -3,7 +3,6 @@ import Text = PIXI.Text;
 import TextStyleOptions = PIXI.TextStyleOptions;
 import Graphics = PIXI.Graphics;
 import Rectangle = PIXI.Rectangle;
-import InteractionData = PIXI.interaction.InteractionData;
 import {Card} from '@app/game/card/card';
 
 export class CardView extends Container {
@@ -18,10 +17,8 @@ export class CardView extends Container {
         fill: 0x000000
     };
 
-
     constructor(private card: Card, x: number = 0, y: number = 0) {
         super();
-
         this.x = x;
         this.y = y;
 

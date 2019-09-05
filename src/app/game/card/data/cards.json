@@ -1,0 +1,23 @@
+{
+  "version": 0.1,
+  "cards": {
+    "revolver": {
+      "name": "revolver",
+      "targeting": "POINT",
+      "range": 5,
+      "onPlay": {
+        "action": "damage",
+        "value": 5
+      },
+      "onDraw": {
+        "action": "nothing"
+      },
+      "onDiscard": {
+        "action": "nothing"
+      },
+      "onAddToDeck": {
+        "action": "nothing"
+      }
+    }
+  }
+}

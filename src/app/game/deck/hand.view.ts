@@ -130,7 +130,6 @@ export class HandView extends Container {
         cards.forEach((card: Card, i: number) =>
             card.view.x = i * (CardView.width + this.spacing)
         );
-
         this.handContainer.addChild(...cards.map(c => c.view));
     }
 

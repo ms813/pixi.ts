@@ -1,5 +1,7 @@
-import {Tile} from '@app/game/map/tile';
+import {Tile, TileType} from '@app/game/map/tile';
 import {Direction} from '@app/game/direction.enum';
+import {Player} from '@app/game/actor/player';
+import {Enemy} from '@app/game/actor/enemy';
 import Container = PIXI.Container;
 
 export class LevelMap extends Container {
@@ -9,11 +11,15 @@ export class LevelMap extends Container {
     private _width: number;
     private _height: number;
     private _grid: Container;
+    private _enemies: Enemy[] = [];
+    private _player: Player;
 
-    constructor(width: number, height: number){
+    constructor(width: number, height: number) {
         super();
         this.width = width;
         this.height = height;
+
+        this.update = this.update.bind(this);
     }
 
     public get height(): number {
@@ -62,6 +68,21 @@ export class LevelMap extends Container {
         return this.tiles[this.coordsToIndex(x, y)].passable;
     }
 
+    public update() {
+
+        this.tiles.forEach(t => t.passable = t.type === TileType.FLOOR);
+
+        if (this.player) {
+            const {x, y} = this.player;
+            this.tiles[this.coordsToIndex(x, y)].passable = false;
+        }
+
+        this._enemies.forEach(e => {
+            const {x, y} = e;
+            this.tiles[this.coordsToIndex(x, y)].passable = false;
+        });
+    }
+
     public coordsToIndex(x: number, y: number): number {
         if (x < 0 || x >= this.width) {
             throw RangeError(`LevelMap::coordsToIndex - x out of bounds (x = ${x}, width = ${this.width}`);
@@ -94,17 +115,36 @@ export class LevelMap extends Container {
         };
 
         const isMoveLegal = {
-            [Direction.N]: () => canMove.up && this.tiles[this.coordsToIndex(x, y - 1)].passable,
-            [Direction.NE]: () => canMove.up && canMove.right && this.tiles[this.coordsToIndex(x + 1, y - 1)].passable,
-            [Direction.E]: () => canMove.right && this.tiles[this.coordsToIndex(x + 1, y)].passable,
-            [Direction.SE]: () => canMove.right && canMove.down && this.tiles[this.coordsToIndex(x + 1, y + 1)].passable,
-            [Direction.S]: () => canMove.down && this.tiles[this.coordsToIndex(x, y + 1)].passable,
-            [Direction.SW]: () => canMove.down && canMove.left && this.tiles[this.coordsToIndex(x - 1, y + 1)].passable,
-            [Direction.W]: () => canMove.left && this.tiles[this.coordsToIndex(x - 1, y)].passable,
-            [Direction.NW]: () => canMove.left && canMove.up && this.tiles[this.coordsToIndex(x - 1, y - 1)].passable
+            [Direction.N]: () => canMove.up && this.isPassable(x, y - 1),
+            [Direction.NE]: () => canMove.up && canMove.right && this.isPassable(x + 1, y - 1),
+            [Direction.E]: () => canMove.right && this.isPassable(x + 1, y),
+            [Direction.SE]: () => canMove.right && canMove.down && this.isPassable(x + 1, y + 1),
+            [Direction.S]: () => canMove.down && this.isPassable(x, y + 1),
+            [Direction.SW]: () => canMove.down && canMove.left && this.isPassable(x - 1, y + 1),
+            [Direction.W]: () => canMove.left && this.isPassable(x - 1, y),
+            [Direction.NW]: () => canMove.left && canMove.up && this.isPassable(x - 1, y - 1)
         };
 
-        console.debug(`isLegal: (${x}, ${y}), ${direction}, ${isMoveLegal[direction]()}`);
+        console.debug(`isLegal: (${x}, ${y}), ${Direction[direction]}, ${isMoveLegal[direction]()}`);
         return isMoveLegal[direction]();
+    }
+
+    public set player(player: Player) {
+        this._player = player;
+        this.update();
+    }
+
+    public get player(): Player {
+        return this._player;
+    }
+
+    public addEnemy(...enemy: Enemy[]) {
+        this._enemies.push(...enemy);
+        this.update();
+    }
+
+    public removeEnemy(enemy: Enemy) {
+        this._enemies = this._enemies.filter(e => e != enemy);
+        this.update();
     }
 }

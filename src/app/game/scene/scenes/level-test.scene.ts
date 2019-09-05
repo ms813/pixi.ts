@@ -11,11 +11,11 @@ import {Enemy} from '@app/game/actor/enemy';
 import {Game} from '@app/game/game';
 import Ticker = PIXI.ticker.Ticker;
 import Container = PIXI.Container;
+import {CardDictionary} from '@app/game/card/dictionary/card-dictionary';
 
 export class LevelTestScene extends Scene {
-    private player: Player;
+
     private map: LevelMap;
-    private enemies: Enemy[] = [];
 
     constructor(id: string) {
         super(id, new Container(), new Ticker());
@@ -31,38 +31,49 @@ export class LevelTestScene extends Scene {
 
         const cards = [];
         for (let i = 0; i < 10; i++) {
-            cards.push(new Card(`test-card-${i}`));
+            cards.push(CardDictionary.get('revolver'));
         }
 
-        this.player = new Player(new Deck(cards));
-        this.player.x = 1;
-        this.player.y = 1;
-        this.addChild(this.player.sprite);
+        const player = new Player(new Deck(cards));
+        player.x = 1;
+        player.y = 1;
+        this.addChild(player.sprite);
+        this.map.player = player;
 
-        const handView: HandView = new HandView(this.player);
+        const handView: HandView = new HandView(player);
         this.addChild(handView);
-        this.player.onDraw = [handView.draw];
-        this.player.onDiscard = [handView.discard];
+        player.onDraw = [handView.draw];
+        player.onDiscard = [handView.discard];
+        player.onMove = [this.map.update];
 
-        // Game.turnClock.scheduleTurn(this.player, 1);
-        this.enemies.forEach((e: Enemy) => Game.turnClock.scheduleTurn(e, 2));
+        // Game.turnClock.scheduleTurn(player, 1);
+        const enemies: Enemy[] = [];
+        enemies.push(new Enemy('test-enemy'));
+        enemies.forEach((e: Enemy) => {
+            Game.turnClock.scheduleTurn(e, 2);
+            e.x = this.map.width - 2;
+            e.y = this.map.height - 2;
+            this.addChild(e.sprite);
+        });
+
+        this.map.addEnemy(...enemies);
 
         // // draw some cards to test the deck
         // const drawTimeoutMillis: number = 1000;
         // let millisLeftUntilDraw: number = drawTimeoutMillis;
         // this.ticker.add((delta: number) => {
         //     if (millisLeftUntilDraw <= 0) {
-        //         const {drawPile, hand, discardPile} = this.player;
+        //         const {drawPile, hand, discardPile} = player;
         //         console.debug(`Before draw - draw: ${drawPile.length}, hand: ${hand.length}, discard: ${discardPile.length}`);
-        //         this.player.draw();
+        //         player.draw();
         //         millisLeftUntilDraw = drawTimeoutMillis;
         //     }
         //     millisLeftUntilDraw -= this.ticker.elapsedMS;
         // });
 
         // put some cards in the players hand to start
-        while (this.player.hand.length < 3) {
-            this.player.draw();
+        while (player.hand.length < 3) {
+            player.draw();
         }
 
         this.keys = this.getKeybindings();
@@ -70,42 +81,42 @@ export class LevelTestScene extends Scene {
 
     private getKeybindings(): Key[] {
         const {N, NE, E, SE, S, SW, W, NW} = Direction;
-
+        const {player} = this.map;
         return [
             Key.create('ArrowUp', () =>
-                this.player.move(N, this.map.isLegalMove(this.player.x, this.player.y, N))
+                player.move(N, this.map.isLegalMove(player.x, player.y, N))
             ),
             Key.create('Numpad8', () =>
-                this.player.move(N, this.map.isLegalMove(this.player.x, this.player.y, N))
+                player.move(N, this.map.isLegalMove(player.x, player.y, N))
             ),
             Key.create('Numpad9', () =>
-                this.player.move(NE, this.map.isLegalMove(this.player.x, this.player.y, NE))
+                player.move(NE, this.map.isLegalMove(player.x, player.y, NE))
             ),
             Key.create('ArrowRight', () =>
-                this.player.move(E, this.map.isLegalMove(this.player.x, this.player.y, E))
+                player.move(E, this.map.isLegalMove(player.x, player.y, E))
             ),
             Key.create('Numpad6', () =>
-                this.player.move(E, this.map.isLegalMove(this.player.x, this.player.y, E))
+                player.move(E, this.map.isLegalMove(player.x, player.y, E))
             ),
             Key.create('Numpad3', () =>
-                this.player.move(SE, this.map.isLegalMove(this.player.x, this.player.y, SE))
+                player.move(SE, this.map.isLegalMove(player.x, player.y, SE))
             ),
             Key.create('ArrowDown', () =>
-                this.player.move(S, this.map.isLegalMove(this.player.x, this.player.y, S))
+                player.move(S, this.map.isLegalMove(player.x, player.y, S))
             ),
             Key.create('Numpad2', () =>
-                this.player.move(S, this.map.isLegalMove(this.player.x, this.player.y, S))),
+                player.move(S, this.map.isLegalMove(player.x, player.y, S))),
             Key.create('Numpad1', () =>
-                this.player.move(SW, this.map.isLegalMove(this.player.x, this.player.y, SW))
+                player.move(SW, this.map.isLegalMove(player.x, player.y, SW))
             ),
             Key.create('ArrowLeft', () =>
-                this.player.move(W, this.map.isLegalMove(this.player.x, this.player.y, W))
+                player.move(W, this.map.isLegalMove(player.x, player.y, W))
             ),
             Key.create('Numpad4', () =>
-                this.player.move(W, this.map.isLegalMove(this.player.x, this.player.y, W))
+                player.move(W, this.map.isLegalMove(player.x, player.y, W))
             ),
             Key.create('Numpad7', () =>
-                this.player.move(NW, this.map.isLegalMove(this.player.x, this.player.y, NW))
+                player.move(NW, this.map.isLegalMove(player.x, player.y, NW))
             )
         ];
     }

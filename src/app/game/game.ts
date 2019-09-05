@@ -9,6 +9,7 @@ import {Scene} from '@app/game/scene/scene';
 import Container = PIXI.Container;
 import {Card} from '@app/game/card/card';
 import {TurnClock} from '@app/game/turnclock';
+import {CardDictionary} from '@app/game/card/dictionary/card-dictionary';
 
 export const TILE_WIDTH: number = 32;
 
@@ -24,6 +25,10 @@ export class Game {
 
         loader.load(this.setup.bind(this));
         SceneManager.init(this.app);
+
+        const revolverCard = CardDictionary.get('revolver');
+        console.log(revolverCard)
+
     }
 
     setup(): void {
@@ -35,11 +40,11 @@ export class Game {
     }
 
     private buildDeckScene(): Scene {
-        const cards = [
-            new Card('A'),
-            new Card('B'),
-            new Card('C'),
-            new Card('D'),
+        const cards: Card[] = [
+            // new Card('A'),
+            // new Card('B'),
+            // new Card('C'),
+            // new Card('D'),
         ];
 
         const deck = new Deck(cards);

@@ -12,15 +12,15 @@ export class TurnClock {
 
     public nextTurn(): { [key: string]: Movable[] } {
         this._currentTurn++;
-        console.debug(`TurnClock:nextTurn - Start turn ${this._currentTurn}`);
+        // console.debug(`TurnClock:nextTurn - Start turn ${this._currentTurn}`);
 
         const actors: Movable[] = this.turnSchedule[this.currentTurn] || [];
         let playerTurn: boolean = false;
         actors.forEach((actor: Movable) => {
             if (actor instanceof Player) {
-                console.log('is player turn');
                 playerTurn = true;
             } else {
+                console.debug(`TurnClock:nextTurn - Start %cenemy%c turn ${this._currentTurn}`, 'color:red', 'color:black');
                 actor.doTurn();
             }
         });
@@ -31,13 +31,13 @@ export class TurnClock {
             // console.debug(`TurnClock:nextTurn - End of turn ${this._currentTurn}`);
             return this.nextTurn();
         }
-        console.debug(`TurnClock:nextTurn - End of turn ${this._currentTurn}`);
+        // console.debug(`TurnClock:nextTurn - End of turn ${this._currentTurn}`);
 
         return {[this.currentTurn]: this.turnSchedule[this.currentTurn]};
     }
 
     public scheduleTurn(actor: Movable, delta: number) {
-        console.log(`TurnClock::scheduleTurn Scheduling turn for ${actor} on turn ${this.currentTurn + delta}`);
+        console.debug(`TurnClock::scheduleTurn - Scheduling turn for %c${actor.id}%c on turn ${this.currentTurn + delta}`,  `color:${actor instanceof Player ? 'green' : 'red'}`,'color:black');
         const turn = this.currentTurn + delta;
         if (!this.turnSchedule[turn]) {
             this.turnSchedule[turn] = [];

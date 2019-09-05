@@ -13,16 +13,17 @@ export class Player extends Movable {
     private _hand: Deck;
     private _deck: Deck;
 
-    private _drawCooldown: number;
+    private _drawCooldown: number = 500;
     private _currentDrawCooldown: number;
 
     public maxHandSize: number = 5;
 
+    public onMove: ((prevPos: { x: number, y: number }, nextPos: { x: number, y: number }) => void)[];
     public onDraw: ((...cards: Card[]) => void)[];
     public onDiscard: ((...cards: Card[]) => void)[];
 
     constructor(deck: Deck) {
-        super();
+        super('player');
         this.deck = deck.shuffle();
         console.log(this.deck.cards.map(c => c.name));
 
@@ -36,6 +37,7 @@ export class Player extends Movable {
         console.log(this.drawPile, this.hand, this.discardPile);
 
         this.sprite = new Sprite(loader.resources['player'].texture);
+        this.sprite.tint = 0x000000;
     }
 
     public doTurn(): Player {
@@ -48,7 +50,7 @@ export class Player extends Movable {
     public draw(): Card[] {
 
         if (this.drawPile.length === 0 && this.discardPile.length === 0) {
-            console.log(`Player::draw attempted to draw a card, but both draw and discard piles are empty!`);
+            console.warn(`Player::draw attempted to draw a card, but both draw and discard piles are empty!`);
             return [];
         }
 
@@ -64,18 +66,31 @@ export class Player extends Movable {
             this.onDiscard.forEach(fn => fn(...cardsToDiscard));
         }
 
-        //draw the next n cards
         const newlyDrawnCards: Card[] = this.drawPile.pop();
         this.onDraw.forEach(fn => fn(...newlyDrawnCards));
         this.hand.push(...newlyDrawnCards);
-
+        console.debug('Player::draw - Hand after draw: ', this.hand);
         return newlyDrawnCards;
     }
 
     move(direction: Direction, isLegalMove: boolean): { x: number, y: number } {
-        const movePos = super.move(direction, isLegalMove);
-        this.doTurn();
-        return movePos;
+        if (isLegalMove) {
+            const prevPos = {x: this.x, y: this.y};
+            const movePos = super.move(direction, isLegalMove);
+            this.currentDrawCooldown -= this._moveSpeed;
+            console.debug(`Player::move - Draw cooldown: ${this.currentDrawCooldown}`);
+            if (this.currentDrawCooldown <= 0) {
+                this.draw();
+                this.currentDrawCooldown = this.drawCooldown;
+            }
+
+            this.doTurn();
+            this.onMove.forEach(fn => fn(prevPos, movePos));
+            return movePos;
+        } else {
+            console.debug(`Player::move - Attempted illegal move, no turn performed`);
+            return {x: 0, y: 0};
+        }
     }
 
     get drawPile(): Deck {
