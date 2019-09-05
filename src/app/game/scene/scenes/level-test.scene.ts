@@ -3,15 +3,14 @@ import {LevelMap} from '@app/game/map/level-map';
 import {LevelMapGenerator} from '@app/game/map/level-map.generator';
 import {Key} from '@app/game/keyboard.event';
 import {Player} from '@app/game/actor/player';
-import {Card} from '@app/game/card/card';
 import {Deck} from '@app/game/deck/deck';
 import {Direction} from '@app/game/direction.enum';
 import {HandView} from '@app/game/deck/hand.view';
 import {Enemy} from '@app/game/actor/enemy';
 import {Game} from '@app/game/game';
+import {CardDictionary} from '@app/game/card/dictionary/card-dictionary';
 import Ticker = PIXI.ticker.Ticker;
 import Container = PIXI.Container;
-import {CardDictionary} from '@app/game/card/dictionary/card-dictionary';
 
 export class LevelTestScene extends Scene {
 
@@ -20,9 +19,9 @@ export class LevelTestScene extends Scene {
     constructor(id: string) {
         super(id, new Container(), new Ticker());
 
-        this.map = new LevelMapGenerator(10, 10)
+        this.map = new LevelMapGenerator(32, 17)
         .grid(0xcccccc)
-        .randomWalls(0.3)
+        // .randomWalls(0.3)
         .build();
 
         console.debug('map:', this.map);
@@ -30,8 +29,11 @@ export class LevelTestScene extends Scene {
         this.addChild(this.map);
 
         const cards = [];
-        for (let i = 0; i < 10; i++) {
-            cards.push(CardDictionary.get('revolver'));
+        for (let i = 0; i < 3; i++) {
+            const card = CardDictionary.get('revolver');
+            card.view.showRange = (range: number) => this.map.showRange(player.x, player.y, range);
+            card.view.hideRange = () => this.map.hideRange();
+            cards.push(card);
         }
 
         const player = new Player(new Deck(cards));
@@ -46,7 +48,6 @@ export class LevelTestScene extends Scene {
         player.onDiscard = [handView.discard];
         player.onMove = [this.map.update];
 
-        // Game.turnClock.scheduleTurn(player, 1);
         const enemies: Enemy[] = [];
         enemies.push(new Enemy('test-enemy'));
         enemies.forEach((e: Enemy) => {

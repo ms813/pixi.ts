@@ -1,8 +1,13 @@
-import {Tile, TileType} from '@app/game/map/tile';
+import {Tile} from '@app/game/map/tile';
 import {Direction} from '@app/game/direction.enum';
 import {Player} from '@app/game/actor/player';
 import {Enemy} from '@app/game/actor/enemy';
+import {TILE_WIDTH} from '@app/game/game';
+import {TileType} from '@app/game/map/tile-type';
 import Container = PIXI.Container;
+import loader = PIXI.loader;
+import Resource = PIXI.loaders.Resource;
+import Sprite = PIXI.Sprite;
 
 export class LevelMap extends Container {
 
@@ -13,13 +18,16 @@ export class LevelMap extends Container {
     private _grid: Container;
     private _enemies: Enemy[] = [];
     private _player: Player;
+    private rangeIndicator: Container;
+    private resources: Resource;
 
     constructor(width: number, height: number) {
         super();
         this.width = width;
         this.height = height;
-
+        this.resources = loader.resources['map_tiles'];
         this.update = this.update.bind(this);
+        this.rangeIndicator = new Container();
     }
 
     public get height(): number {
@@ -89,7 +97,7 @@ export class LevelMap extends Container {
         }
 
         if (y < 0 || y >= this.height) {
-            throw RangeError(`CoordsToIndex - y out of bounds (y = ${y}, height = ${this.height}`);
+            throw RangeError(`LevelMap::coordsToIndex - y out of bounds (y = ${y}, height = ${this.height}`);
         }
 
         return y * this.width + x;
@@ -146,5 +154,30 @@ export class LevelMap extends Container {
     public removeEnemy(enemy: Enemy) {
         this._enemies = this._enemies.filter(e => e != enemy);
         this.update();
+    }
+
+    public showRange = (x: number, y: number, range: number): void => {
+        //highlight circle centered at (x, y) with radius = range
+        console.log(`LevelMap::showRange - (${x}, ${y}):${range}`);
+        const left = x - range;
+        const right = x + range;
+        const top = y - range;
+        const bottom = y + range;
+
+        for (let i = left; i <= right; i++) {
+            for (let j = top; j <= bottom; j++) {
+                const s: Sprite = new Sprite(this.resources.textures['test_tiles_1.png']);
+                s.x = i * TILE_WIDTH;
+                s.y = j * TILE_WIDTH;
+                this.rangeIndicator.addChild(s);
+                s.alpha = 0.5;
+            }
+        }
+        this.addChild(this.rangeIndicator);
+    };
+
+    public hideRange() {
+        console.log(`LevelMap::hideRange, removing ${this.rangeIndicator.children.length} children`);
+        this.rangeIndicator.removeChildren(0, this.rangeIndicator.children.length);
     }
 }

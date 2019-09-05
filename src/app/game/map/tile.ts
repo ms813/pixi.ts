@@ -1,5 +1,6 @@
 import Sprite = PIXI.Sprite;
 import Texture = PIXI.Texture;
+import {TileType} from '@app/game/map/tile-type';
 
 export class Tile extends Sprite {
 
@@ -28,6 +29,3 @@ export class Tile extends Sprite {
     }
 }
 
-export enum TileType {
-    FLOOR, WALL, INDESTRUCTABLE_WALL
-}

@@ -1,6 +1,7 @@
 import {LevelMap} from './level-map';
-import {Tile, TileType} from '@app/game/map/tile';
+import {Tile} from '@app/game/map/tile';
 import {TILE_WIDTH} from '@app/game/game';
+import {TileType} from '@app/game/map/tile-type';
 import Resource = PIXI.loaders.Resource;
 import loader = PIXI.loader;
 import Container = PIXI.Container;

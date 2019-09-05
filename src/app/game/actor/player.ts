@@ -50,7 +50,7 @@ export class Player extends Movable {
     public draw(): Card[] {
 
         if (this.drawPile.length === 0 && this.discardPile.length === 0) {
-            console.warn(`Player::draw attempted to draw a card, but both draw and discard piles are empty!`);
+            console.debug(`Player::draw attempted to draw a card, but both draw and discard piles are empty!`);
             return [];
         }
 

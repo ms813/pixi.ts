@@ -3,6 +3,7 @@ import Text = PIXI.Text;
 import TextStyleOptions = PIXI.TextStyleOptions;
 import Graphics = PIXI.Graphics;
 import Rectangle = PIXI.Rectangle;
+import InteractionData = PIXI.interaction.InteractionData;
 import {Card} from '@app/game/card/card';
 
 export class CardView extends Container {
@@ -10,6 +11,8 @@ export class CardView extends Container {
     private nameText: Text;
     public static readonly width: number = 96;
     public static readonly height: number = 128;
+    public showRange: (range: number) => void;
+    public hideRange: () => void;
 
     private readonly textStyleOptions: TextStyleOptions = {
         fontFamily: 'Arial',
@@ -25,11 +28,13 @@ export class CardView extends Container {
         const border: Graphics = new Graphics();
         console.debug(`CardView:: ${card.name}: (${x}, ${y})`);
         border.lineStyle(1, 0x000000);
-        border.drawRect(0, 0,  CardView.width,  CardView.height);
+        border.drawRect(0, 0, CardView.width, CardView.height);
         border.interactive = true;
         border.hitArea = new Rectangle(0, 0, CardView.width, CardView.height);
         // @ts-ignore
-        // border.mouseover = (e: InteractionData) => console.log(`Moused over card: ${card.name}`);
+        border.mouseover = (e: InteractionData) => this.showRange(this.card.range);
+        // @ts-ignore
+        border.mouseout = () => this.hideRange();
         this.nameText = new Text(card.name, this.textStyleOptions);
 
         this.addChild(border);
