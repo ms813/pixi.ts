@@ -5,14 +5,13 @@ const CardData: { version: number, cards: { [key: string]: CardDefinition } } = 
 
 export class CardDictionary {
     static get(name: string): Card {
-        return new CardBuilder(CardData.cards[name])
-        .buildOnPlay()
-        .build();
+        return new CardBuilder(CardData.cards[name]).build();
     }
 }
 
 export interface CardDefinition {
     name: string;
+    displayName: string;
     targeting: string;
     range: number;
     speed: number;
@@ -28,7 +27,8 @@ export interface CardActionDefinition {
 }
 
 export const CardActionDictionary: { [key: string]: (defn: CardActionDefinition) => (d: DragEndData, options?: any) => any } = {
-    damage: (defn: CardActionDefinition) => ({enemy}: DragEndData) => enemy.hp -= defn.value
+    damage: (defn: CardActionDefinition) => ({target}: DragEndData) => target.hp -= defn.value,
+    heal: (defn: CardActionDefinition) => ({target}: DragEndData) => target.hp += defn.value
 };
 
 class CardBuilder {
@@ -36,15 +36,20 @@ class CardBuilder {
     private defn: CardDefinition;
 
     constructor(defn: CardDefinition) {
-        this.card = new Card(defn);
         this.defn = defn;
+        this.card = new Card(defn);
+        this.buildOnPlay().buildOnDiscard();
     }
 
     buildOnPlay(): CardBuilder {
-        this.card.onPlay.push(({x, y}: DragEndData) => console.log(`Card ${name} played at (${x}, ${y})`));
-
+        this.card.onPlay.push(({x, y}: DragEndData) => console.debug(`Card ${name} played at (${x}, ${y})`));
         const fn = CardActionDictionary[this.defn.onPlay.action];
         this.card.onPlay.push(fn(this.defn.onPlay));
+        return this;
+    }
+
+    buildOnDiscard(): CardBuilder {
+        this.card.onDiscard.push(() => console.debug(`CardBuilder - Discarding ${this.card.name}`));
         return this;
     }
 

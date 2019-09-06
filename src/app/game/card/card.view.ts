@@ -6,11 +6,11 @@ import Rectangle = PIXI.Rectangle;
 import InteractionData = PIXI.interaction.InteractionData;
 import InteractionEvent = PIXI.interaction.InteractionEvent;
 import {Card} from '@app/game/card/card';
-import {Enemy} from '@app/game/actor/enemy';
 import {Tile} from '@app/game/map/tile';
 import {TargetingType} from '@app/game/card/targeting-type';
 import {LevelMap} from '@app/game/map/level-map';
 import {DragEndData} from '@app/game/card/drag-end.data';
+import {Movable} from '@app/game/actor/movable';
 
 export class CardView extends Container {
 
@@ -35,12 +35,13 @@ export class CardView extends Container {
         super();
         this.x = x;
         this.y = y;
+        this.hideRange = this.hideRange.bind(this);
         this.onDragStart = this.onDragStart.bind(this);
         this.onDragEnd = this.onDragEnd.bind(this);
         this.onDragMove = this.onDragMove.bind(this);
 
         const border: Graphics = new Graphics();
-        console.debug(`CardView:: ${card.name}: (${x}, ${y})`);
+        console.debug(`CardView::new - ${card.name}: (${x}, ${y})`);
         border.lineStyle(1, 0x000000);
         border.drawRect(0, 0, CardView.width, CardView.height);
         border.interactive = true;
@@ -50,7 +51,7 @@ export class CardView extends Container {
         this.card.onDiscard.unshift(() => this.hideRange());
 
         this.initDrag(border);
-        this.nameText = new Text(card.name, this.textStyleOptions);
+        this.nameText = new Text(card.displayName, this.textStyleOptions);
 
         this.addChild(border);
         this.addChild(this.nameText);
@@ -76,9 +77,23 @@ export class CardView extends Container {
     public getDragEndData(pX: number, pY: number): DragEndData {
         const {x, y} = this.map.pixelCoordsToMapCoords(pX, pY);
         const tile: Tile = this.map.getTileFromPixelCoords(pX, pY);
-        const enemy: Enemy = this.map.enemies.find((e: Enemy) => e.x === x && e.y === y);
 
-        return {pX, pY, x, y, tile, enemy, card: this.card};
+        let target: Movable;
+        if (this.card.targeting === TargetingType.SELF) {
+            target = this.map.player;
+        } else {
+            target = this.map.getMovableAt(x, y);
+        }
+
+
+        return {
+            pX, pY,
+            x, y,
+            tile,
+            target: target,
+            card: this.card,
+            player: this.map.player
+        };
     }
 
     private initDrag(g: Graphics) {
@@ -90,7 +105,7 @@ export class CardView extends Container {
 
     private onDragStart(e: InteractionEvent) {
         this.dragData = e.data;
-        console.log(e.data);
+
         this.alpha = 0.5;
         this.dragging = true;
         this.dragStart = {x: this.x, y: this.y};
@@ -131,7 +146,7 @@ export class CardView extends Container {
     }
 
     private isValidPlay(dragEndData: DragEndData): boolean {
-        const {x, y, enemy} = dragEndData;
+        const {x, y, target} = dragEndData;
 
         // play self targeted cards as soon as they are dropped anywhere on the map
         if (this.card.targeting === TargetingType.SELF) {
@@ -144,8 +159,8 @@ export class CardView extends Container {
 
         switch (this.card.targeting) {
             case (TargetingType.UNIT):
-                // unit targeted cards can only be played on an in-range square containing and enemy
-                return !!enemy;
+                // unit targeted cards can only be played on an in-range square containing and target
+                return !!target;
 
             case (TargetingType.POINT):
                 // point targeted cards can be played on any in-range square

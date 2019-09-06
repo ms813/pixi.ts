@@ -134,7 +134,7 @@ export class HandView extends Container {
     }
 
     discard(...cards: Card[]) {
-        console.debug(`HandView::discard`, ...cards);
+        console.debug(`HandView::discard`, ...cards.map(c => c.name));
         cards.forEach(({view}: { view: CardView }) => this.handContainer.removeChild(view));
         this.refreshDiscardCountString();
     }

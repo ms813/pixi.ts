@@ -72,7 +72,8 @@ export abstract class Movable {
     }
 
     set hp(value: number) {
-        console.debug(`${this.id} hit for ${value} damage. Hp before: ${this._hp}, hp after:${value}`);
+        const diff = this._hp - value;
+        console.debug(`${this.id} ${diff > 0 ? 'damaged' : 'healed'} for ${Math.abs(diff)}. Hp before: ${this._hp}, hp after:${value}`);
         this._hp = value;
     }
 

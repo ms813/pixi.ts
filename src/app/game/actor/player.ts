@@ -26,10 +26,9 @@ export class Player extends Movable {
         super('player');
         this.deck = deck.shuffle();
         console.log(this.deck.cards.map(c => c.name));
-        this.deck.cards.forEach(c => c.onDiscard.push(() => {
-            console.log('discarding ', c);
-            this.discard(c);
-        }));
+        this.deck.cards.forEach(c => c.onDiscard.push(
+            () => this.discard(c)
+        ));
 
         this.drawPile = new Deck(deck.cards);
         this.discardPile = new Deck();

@@ -5,6 +5,7 @@ import {Enemy} from '@app/game/actor/enemy';
 import {TILE_WIDTH} from '@app/game/game';
 import {TileType} from '@app/game/map/tile-type';
 import {DragEndData} from '@app/game/card/drag-end.data';
+import {Movable} from '@app/game/actor/movable';
 import Container = PIXI.Container;
 import loader = PIXI.loader;
 import Resource = PIXI.loaders.Resource;
@@ -165,7 +166,7 @@ export class LevelMap extends Container {
 
     public showRange = (x: number, y: number, range: number): void => {
         //highlight circle centered at (x, y) with radius = range
-        console.log(`LevelMap::showRange - (${x}, ${y}):${range}`);
+        console.debug(`LevelMap::showRange - Center=(${x}, ${y}), r=${range}`);
 
         for (let i = -range; i <= range; i++) {
             for (let j = -range; j <= range; j++) {
@@ -180,7 +181,6 @@ export class LevelMap extends Container {
     };
 
     public hideRange() {
-        console.log(`LevelMap::hideRange, removing ${this.rangeIndicator.children.length} children`);
         this.rangeIndicator.removeChildren(0, this.rangeIndicator.children.length);
     }
 
@@ -189,13 +189,10 @@ export class LevelMap extends Container {
     }
 
     public pixelCoordsToMapCoords(pX: number, pY: number): { x: number, y: number } {
-
-        const a = {
+        return {
             x: Math.floor(pX / TILE_WIDTH),
             y: Math.floor(pY / TILE_WIDTH)
         };
-        console.log(pX, pY, a);
-        return a;
     }
 
     public pixelCoordsToIndex(pX: number, pY: number): number {
@@ -211,5 +208,12 @@ export class LevelMap extends Container {
 
     public discardCard(dragEndData: DragEndData): void {
 
+    }
+
+    public getMovableAt(x: number, y: number): Movable {
+        if (this.player.x === x && this.player.y === y) {
+            return this.player;
+        }
+        return this.enemies.find((e: Enemy) => e.x === x && e.y === y);
     }
 }

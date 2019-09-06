@@ -3,11 +3,32 @@
   "cards": {
     "revolver": {
       "name": "revolver",
+      "displayName": "Revolver",
       "targeting": "UNIT",
       "range": 5,
       "speed": 150,
       "onPlay": {
         "action": "damage",
+        "value": 5
+      },
+      "onDraw": {
+        "action": "nothing"
+      },
+      "onDiscard": {
+        "action": "nothing"
+      },
+      "onAddToDeck": {
+        "action": "nothing"
+      }
+    },
+    "firstAid": {
+      "name": "firstAid",
+      "displayName": "First Aid Kit",
+      "targeting": "SELF",
+      "range": 0,
+      "speed": 500,
+      "onPlay": {
+        "action": "heal",
         "value": 5
       },
       "onDraw": {

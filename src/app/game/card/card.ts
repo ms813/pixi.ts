@@ -14,9 +14,11 @@ export class Card {
     public readonly onDraw: Function[] = [];
     public readonly onDiscard: Function[] = [];
     public readonly onAddToDeck: Function[] = [];
+    public readonly displayName: string;
 
     constructor(defn: CardDefinition) {
         this.name = defn.name;
+        this.displayName = defn.displayName;
         this.targeting = TargetingType[defn.targeting as keyof typeof TargetingType];
         this.view = new CardView(this);
         this.range = defn.range;
