@@ -1,6 +1,6 @@
 export enum TargetingType {
     UNIT,
-    POINT ,
-    SELF ,
+    POINT,
+    SELF,
     LINE
 }

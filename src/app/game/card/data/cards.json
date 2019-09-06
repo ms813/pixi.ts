@@ -3,8 +3,9 @@
   "cards": {
     "revolver": {
       "name": "revolver",
-      "targeting": "POINT",
+      "targeting": "UNIT",
       "range": 5,
+      "speed": 150,
       "onPlay": {
         "action": "damage",
         "value": 5

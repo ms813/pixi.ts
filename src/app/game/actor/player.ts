@@ -26,6 +26,10 @@ export class Player extends Movable {
         super('player');
         this.deck = deck.shuffle();
         console.log(this.deck.cards.map(c => c.name));
+        this.deck.cards.forEach(c => c.onDiscard.push(() => {
+            console.log('discarding ', c);
+            this.discard(c);
+        }));
 
         this.drawPile = new Deck(deck.cards);
         this.discardPile = new Deck();
@@ -40,9 +44,9 @@ export class Player extends Movable {
         this.sprite.tint = 0x000000;
     }
 
-    public doTurn(): Player {
+    public doTurn(delay: number): Player {
         console.debug('Player::doTurn - turn start');
-        Game.turnClock.scheduleTurn(this, this._moveSpeed);
+        Game.turnClock.scheduleTurn(this, delay);
         Game.turnClock.nextTurn();
         return this;
     }
@@ -61,9 +65,7 @@ export class Player extends Movable {
 
         // Hand is full, move the oldest card to discard
         if (this.hand.length >= this.maxHandSize) {
-            const cardsToDiscard: Card[] = this.hand.shift();
-            this.discardPile.push(...cardsToDiscard);
-            this.onDiscard.forEach(fn => fn(...cardsToDiscard));
+            this.discard();
         }
 
         const newlyDrawnCards: Card[] = this.drawPile.pop();
@@ -73,24 +75,42 @@ export class Player extends Movable {
         return newlyDrawnCards;
     }
 
+    public discard(...cards: Card[]): Card[] {
+        if (cards.length > 0) {
+            cards.forEach(this.hand.remove);
+        } else {
+            cards = this.hand.shift();
+        }
+
+        this.discardPile.push(...cards);
+        this.onDiscard.forEach(fn => fn(...cards));
+        return cards;
+    }
+
     move(direction: Direction, isLegalMove: boolean): { x: number, y: number } {
+        const prevPos = {x: this.x, y: this.y};
         if (isLegalMove) {
-            const prevPos = {x: this.x, y: this.y};
             const movePos = super.move(direction, isLegalMove);
-            this.currentDrawCooldown -= this._moveSpeed;
+            this.currentDrawCooldown -= this.moveSpeed;
             console.debug(`Player::move - Draw cooldown: ${this.currentDrawCooldown}`);
             if (this.currentDrawCooldown <= 0) {
                 this.draw();
                 this.currentDrawCooldown = this.drawCooldown;
             }
 
-            this.doTurn();
+            this.doTurn(this.moveSpeed);
             this.onMove.forEach(fn => fn(prevPos, movePos));
             return movePos;
         } else {
             console.debug(`Player::move - Attempted illegal move, no turn performed`);
-            return {x: 0, y: 0};
+            return prevPos;
         }
+    }
+
+    private shuffleDiscardIntoDraw() {
+        const cards: Card[] = this.discardPile.pop(this.discardPile.length);
+        this.drawPile.push(...cards);
+        this.drawPile.shuffle();
     }
 
     get drawPile(): Deck {
@@ -147,11 +167,5 @@ export class Player extends Movable {
 
     set currentDrawCooldown(value: number) {
         this._currentDrawCooldown = value;
-    }
-
-    private shuffleDiscardIntoDraw() {
-        const cards: Card[] = this.discardPile.pop(this.discardPile.length);
-        this.drawPile.push(...cards);
-        this.drawPile.shuffle();
     }
 }

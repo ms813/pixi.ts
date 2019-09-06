@@ -6,8 +6,9 @@ export abstract class Movable {
 
     private _sprite: Sprite;
     protected _moveSpeed: number = 100;
+    private _hp: number = 100;
 
-    protected constructor(public readonly id:string){}
+    protected constructor(public readonly id: string) {}
 
     public static readonly moveFnMap: { [key: string]: (m: Movable) => void } = {
         [Direction.N]: (m: Movable) => --m.y,
@@ -32,7 +33,7 @@ export abstract class Movable {
         }
     };
 
-    abstract doTurn(): Movable;
+    abstract doTurn(delay?: number): Movable;
 
     move(direction: Direction, isLegalMove: boolean) {
         if (isLegalMove) {
@@ -51,18 +52,35 @@ export abstract class Movable {
     }
 
     get x(): number {
-        return this.sprite.x / TILE_WIDTH;
+        return Math.floor(this.sprite.x / TILE_WIDTH);
     }
 
     set x(x: number) {
-        this.sprite.x = TILE_WIDTH * x;
+        this.sprite.x = Math.floor(TILE_WIDTH * x);
     }
 
     get y(): number {
-        return this.sprite.y / TILE_WIDTH;
+        return Math.floor(this.sprite.y / TILE_WIDTH);
     }
 
     set y(y: number) {
-        this.sprite.y = TILE_WIDTH * y;
+        this.sprite.y = Math.floor(TILE_WIDTH * y);
+    }
+
+    get hp(): number {
+        return this._hp;
+    }
+
+    set hp(value: number) {
+        console.debug(`${this.id} hit for ${value} damage. Hp before: ${this._hp}, hp after:${value}`);
+        this._hp = value;
+    }
+
+    get moveSpeed(): number {
+        return this._moveSpeed;
+    }
+
+    set moveSpeed(moveSpeed: number) {
+        this._moveSpeed = moveSpeed;
     }
 }

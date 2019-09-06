@@ -4,15 +4,26 @@ import TextStyleOptions = PIXI.TextStyleOptions;
 import Graphics = PIXI.Graphics;
 import Rectangle = PIXI.Rectangle;
 import InteractionData = PIXI.interaction.InteractionData;
+import InteractionEvent = PIXI.interaction.InteractionEvent;
 import {Card} from '@app/game/card/card';
+import {Enemy} from '@app/game/actor/enemy';
+import {Tile} from '@app/game/map/tile';
+import {TargetingType} from '@app/game/card/targeting-type';
+import {LevelMap} from '@app/game/map/level-map';
+import {DragEndData} from '@app/game/card/drag-end.data';
 
 export class CardView extends Container {
 
     private nameText: Text;
     public static readonly width: number = 96;
     public static readonly height: number = 128;
-    public showRange: (range: number) => void;
-    public hideRange: () => void;
+
+    // drag and drop
+    private dragData: InteractionData;
+    private dragging: boolean = false;
+    private dragStart: { x: number, y: number };
+
+    private _map: LevelMap;
 
     private readonly textStyleOptions: TextStyleOptions = {
         fontFamily: 'Arial',
@@ -24,6 +35,9 @@ export class CardView extends Container {
         super();
         this.x = x;
         this.y = y;
+        this.onDragStart = this.onDragStart.bind(this);
+        this.onDragEnd = this.onDragEnd.bind(this);
+        this.onDragMove = this.onDragMove.bind(this);
 
         const border: Graphics = new Graphics();
         console.debug(`CardView:: ${card.name}: (${x}, ${y})`);
@@ -31,13 +45,127 @@ export class CardView extends Container {
         border.drawRect(0, 0, CardView.width, CardView.height);
         border.interactive = true;
         border.hitArea = new Rectangle(0, 0, CardView.width, CardView.height);
-        // @ts-ignore
-        border.mouseover = (e: InteractionData) => this.showRange(this.card.range);
-        // @ts-ignore
-        border.mouseout = () => this.hideRange();
+        border.on('mouseover', (e: InteractionData) => this.showRange(this.card.range));
+        border.on('mouseout', () => this.hideRange());
+        this.card.onDiscard.unshift(() => this.hideRange());
+
+        this.initDrag(border);
         this.nameText = new Text(card.name, this.textStyleOptions);
 
         this.addChild(border);
         this.addChild(this.nameText);
+    }
+
+    public showRange(range: number): void {
+        const {player: {x, y}} = this.map;
+        this.map.showRange(x, y, range);
+    };
+
+    public hideRange() {
+        this.map.hideRange();
+    }
+
+    public isWithinRange(x: number, y: number): boolean {
+        const {player} = this.map;
+        return x <= player.x + this.card.range
+            && x >= player.x - this.card.range
+            && y <= player.y + this.card.range
+            && y >= player.y - this.card.range;
+    }
+
+    public getDragEndData(pX: number, pY: number): DragEndData {
+        const {x, y} = this.map.pixelCoordsToMapCoords(pX, pY);
+        const tile: Tile = this.map.getTileFromPixelCoords(pX, pY);
+        const enemy: Enemy = this.map.enemies.find((e: Enemy) => e.x === x && e.y === y);
+
+        return {pX, pY, x, y, tile, enemy, card: this.card};
+    }
+
+    private initDrag(g: Graphics) {
+        g.on('mousedown', this.onDragStart)
+        .on('mouseup', this.onDragEnd)
+        .on('mouseupoutside', this.onDragEnd)
+        .on('mousemove', this.onDragMove);
+    }
+
+    private onDragStart(e: InteractionEvent) {
+        this.dragData = e.data;
+        console.log(e.data);
+        this.alpha = 0.5;
+        this.dragging = true;
+        this.dragStart = {x: this.x, y: this.y};
+    }
+
+    private onDragEnd(e: InteractionEvent) {
+        this.alpha = 1;
+        this.dragging = false;
+        this.dragData = null;
+        const {x, y} = this.getGlobalPosition();
+
+        // make sure drag end is within the map bounds
+        let dragEndData;
+        try {
+            // add width/2 and height/2 as x,y refer to the card position, not the mouse pointer
+            dragEndData = this.getDragEndData(x + CardView.width / 2, y + CardView.height / 2);
+        } catch (e) {
+            // drag end was not within map bounds
+            this.x = this.dragStart.x;
+            this.y = this.dragStart.y;
+        }
+
+        if (dragEndData && this.isValidPlay(dragEndData)) {
+            this.play(dragEndData);
+            this.discard(dragEndData);
+        } else {
+            this.x = this.dragStart.x;
+            this.y = this.dragStart.y;
+        }
+    }
+
+    private onDragMove(e: InteractionEvent) {
+        if (this.dragging) {
+            let newPosition = this.dragData.getLocalPosition(this.parent);
+            this.x = newPosition.x - CardView.width / 2;
+            this.y = newPosition.y - CardView.height / 2;
+        }
+    }
+
+    private isValidPlay(dragEndData: DragEndData): boolean {
+        const {x, y, enemy} = dragEndData;
+
+        // play self targeted cards as soon as they are dropped anywhere on the map
+        if (this.card.targeting === TargetingType.SELF) {
+            return true;
+        }
+
+        if (!this.isWithinRange(x, y)) {
+            return false;
+        }
+
+        switch (this.card.targeting) {
+            case (TargetingType.UNIT):
+                // unit targeted cards can only be played on an in-range square containing and enemy
+                return !!enemy;
+
+            case (TargetingType.POINT):
+                // point targeted cards can be played on any in-range square
+                return true;
+        }
+    }
+
+    private play(dragEndData: DragEndData): void {
+        this.map.playCard(dragEndData);
+    }
+
+    private discard(dragEndData: DragEndData): void {
+        this.card.onDiscard.forEach(fn => fn());
+    }
+
+    get map(): LevelMap {
+        return this._map;
+    }
+
+    set map(value: LevelMap) {
+        this._map = value;
     }
 }

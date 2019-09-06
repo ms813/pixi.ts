@@ -14,7 +14,8 @@ import Container = PIXI.Container;
 
 export class LevelTestScene extends Scene {
 
-    private map: LevelMap;
+    private readonly map: LevelMap;
+    private readonly player: Player;
 
     constructor(id: string) {
         super(id, new Container(), new Ticker());
@@ -27,37 +28,35 @@ export class LevelTestScene extends Scene {
         console.debug('map:', this.map);
 
         this.addChild(this.map);
-
+        const {enemies, player} = this.map;
         const cards = [];
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 10; i++) {
             const card = CardDictionary.get('revolver');
-            card.view.showRange = (range: number) => this.map.showRange(player.x, player.y, range);
-            card.view.hideRange = () => this.map.hideRange();
+            card.view.map = this.map;
             cards.push(card);
         }
 
-        const player = new Player(new Deck(cards));
-        player.x = 1;
-        player.y = 1;
-        this.addChild(player.sprite);
-        this.map.player = player;
+        this.player = new Player(new Deck(cards));
+        this.player.x = 1;
+        this.player.y = 1;
+        this.addChild(this.player.sprite);
+        this.map.player = this.player;
 
-        const handView: HandView = new HandView(player);
+        const handView: HandView = new HandView(this.player);
         this.addChild(handView);
-        player.onDraw = [handView.draw];
-        player.onDiscard = [handView.discard];
-        player.onMove = [this.map.update];
+        this.player.onDraw = [handView.draw];
+        this.player.onDiscard = [handView.discard];
+        this.player.onMove = [this.map.update];
 
-        const enemies: Enemy[] = [];
-        enemies.push(new Enemy('test-enemy'));
+        enemies.push(new Enemy('test-enemy', this.map));
         enemies.forEach((e: Enemy) => {
             Game.turnClock.scheduleTurn(e, 2);
-            e.x = this.map.width - 2;
-            e.y = this.map.height - 2;
+            e.x = 5;
+            e.y = 5;
+            // e.x = this.map.width - 2;
+            // e.y = this.map.height - 2;
             this.addChild(e.sprite);
         });
-
-        this.map.addEnemy(...enemies);
 
         // // draw some cards to test the deck
         // const drawTimeoutMillis: number = 1000;
@@ -73,8 +72,8 @@ export class LevelTestScene extends Scene {
         // });
 
         // put some cards in the players hand to start
-        while (player.hand.length < 3) {
-            player.draw();
+        while (this.player.hand.length < 3) {
+            this.player.draw();
         }
 
         this.keys = this.getKeybindings();
@@ -118,7 +117,8 @@ export class LevelTestScene extends Scene {
             ),
             Key.create('Numpad7', () =>
                 player.move(NW, this.map.isLegalMove(player.x, player.y, NW))
-            )
+            ),
+            Key.create('Numpad5', () => player.doTurn(player.moveSpeed))
         ];
     }
 }

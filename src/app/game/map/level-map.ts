@@ -4,6 +4,7 @@ import {Player} from '@app/game/actor/player';
 import {Enemy} from '@app/game/actor/enemy';
 import {TILE_WIDTH} from '@app/game/game';
 import {TileType} from '@app/game/map/tile-type';
+import {DragEndData} from '@app/game/card/drag-end.data';
 import Container = PIXI.Container;
 import loader = PIXI.loader;
 import Resource = PIXI.loaders.Resource;
@@ -77,17 +78,19 @@ export class LevelMap extends Container {
     }
 
     public update() {
-
         this.tiles.forEach(t => t.passable = t.type === TileType.FLOOR);
 
         if (this.player) {
             const {x, y} = this.player;
             this.tiles[this.coordsToIndex(x, y)].passable = false;
+            this.rangeIndicator.x = x * TILE_WIDTH;
+            this.rangeIndicator.y = y * TILE_WIDTH;
         }
 
         this._enemies.forEach(e => {
             const {x, y} = e;
             this.tiles[this.coordsToIndex(x, y)].passable = false;
+            this.removeChild(e.sprite);
         });
     }
 
@@ -146,6 +149,10 @@ export class LevelMap extends Container {
         return this._player;
     }
 
+    get enemies(): Enemy[] {
+        return this._enemies;
+    }
+
     public addEnemy(...enemy: Enemy[]) {
         this._enemies.push(...enemy);
         this.update();
@@ -159,18 +166,14 @@ export class LevelMap extends Container {
     public showRange = (x: number, y: number, range: number): void => {
         //highlight circle centered at (x, y) with radius = range
         console.log(`LevelMap::showRange - (${x}, ${y}):${range}`);
-        const left = x - range;
-        const right = x + range;
-        const top = y - range;
-        const bottom = y + range;
 
-        for (let i = left; i <= right; i++) {
-            for (let j = top; j <= bottom; j++) {
-                const s: Sprite = new Sprite(this.resources.textures['test_tiles_1.png']);
+        for (let i = -range; i <= range; i++) {
+            for (let j = -range; j <= range; j++) {
+                const s: Sprite = new Sprite(this.resources.textures['test_tiles_2.png']);
                 s.x = i * TILE_WIDTH;
                 s.y = j * TILE_WIDTH;
                 this.rangeIndicator.addChild(s);
-                s.alpha = 0.5;
+                s.alpha = 0.3;
             }
         }
         this.addChild(this.rangeIndicator);
@@ -179,5 +182,34 @@ export class LevelMap extends Container {
     public hideRange() {
         console.log(`LevelMap::hideRange, removing ${this.rangeIndicator.children.length} children`);
         this.rangeIndicator.removeChildren(0, this.rangeIndicator.children.length);
+    }
+
+    public getTileFromPixelCoords(x: number, y: number): Tile {
+        return this.tiles[this.pixelCoordsToIndex(x, y)];
+    }
+
+    public pixelCoordsToMapCoords(pX: number, pY: number): { x: number, y: number } {
+
+        const a = {
+            x: Math.floor(pX / TILE_WIDTH),
+            y: Math.floor(pY / TILE_WIDTH)
+        };
+        console.log(pX, pY, a);
+        return a;
+    }
+
+    public pixelCoordsToIndex(pX: number, pY: number): number {
+        const {x, y} = this.pixelCoordsToMapCoords(pX, pY);
+        return this.coordsToIndex(x, y);
+    }
+
+    public playCard(dragEndData: DragEndData): void {
+        const {card} = dragEndData;
+        card.onPlay.forEach(fn => fn(dragEndData));
+        this.player.doTurn(card.speed);
+    }
+
+    public discardCard(dragEndData: DragEndData): void {
+
     }
 }

@@ -1,6 +1,6 @@
 import {Card} from '../card/card';
-import {getRandomInt} from '@app/utils';
 import {CardView} from '@app/game/card/card.view';
+import {Utils} from '@app/utils';
 
 export class Deck {
 
@@ -8,13 +8,14 @@ export class Deck {
 
     constructor(cards: Card[] = []) {
         this.cards = cards;
+        this.remove = this.remove.bind(this);
         console.debug(`Deck::new, length: ${cards.length}`);
     }
 
     public shuffle(): Deck {
         console.debug('Deck::shuffle', this.cards);
         for (let i = this.cards.length - 1; i > 1; i--) {
-            const j: number = getRandomInt(0, i);
+            const j: number = Utils.randomInt(0, i);
             const temp = this._cards[i];
             this._cards[i] = this._cards[j];
             this._cards[j] = temp;
@@ -58,5 +59,12 @@ export class Deck {
 
     public get length(): number {
         return this._cards.length;
+    }
+
+    public remove(card: Card) {
+        const i = this.cards.indexOf(card);
+        if (i > -1) {
+            this.cards.splice(i, 1);
+        }
     }
 }
