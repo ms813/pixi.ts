@@ -18,7 +18,6 @@ export class Player extends Movable {
 
     public maxHandSize: number = 5;
 
-    public onMove: ((prevPos: { x: number, y: number }, nextPos: { x: number, y: number }) => void)[];
     public onDraw: ((...cards: Card[]) => void)[];
     public onDiscard: ((...cards: Card[]) => void)[];
 
@@ -98,7 +97,6 @@ export class Player extends Movable {
             }
 
             this.doTurn(this.moveSpeed);
-            this.onMove.forEach(fn => fn(prevPos, movePos));
             return movePos;
         } else {
             console.debug(`Player::move - Attempted illegal move, no turn performed`);

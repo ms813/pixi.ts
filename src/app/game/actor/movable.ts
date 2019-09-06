@@ -8,6 +8,8 @@ export abstract class Movable {
     protected _moveSpeed: number = 100;
     private _hp: number = 100;
 
+    public onMove: ((prevPos: { x: number, y: number }, nextPos: { x: number, y: number }) => void)[];
+
     protected constructor(public readonly id: string) {}
 
     public static readonly moveFnMap: { [key: string]: (m: Movable) => void } = {
@@ -36,11 +38,13 @@ export abstract class Movable {
     abstract doTurn(delay?: number): Movable;
 
     move(direction: Direction, isLegalMove: boolean) {
+        const prevPos = {x: this.x, y: this.y};
         if (isLegalMove) {
             Movable.moveFnMap[direction](this);
         }
-
-        return {x: this.x, y: this.y};
+        const movePos = {x: this.x, y: this.y};
+        this.onMove.forEach(fn => fn(prevPos, movePos));
+        return movePos;
     }
 
     get sprite(): Sprite {

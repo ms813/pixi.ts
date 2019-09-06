@@ -31,7 +31,7 @@ export class LevelTestScene extends Scene {
         const {enemies, player} = this.map;
         const cards = [];
         for (let i = 0; i < 10; i++) {
-            const s = i % 2==0 ? 'revolver' : 'firstAid';
+            const s = i % 2 == 0 ? 'revolver' : 'firstAid';
             const card = CardDictionary.get(s);
             card.view.map = this.map;
             cards.push(card);
@@ -54,6 +54,7 @@ export class LevelTestScene extends Scene {
             Game.turnClock.scheduleTurn(e, 2);
             e.x = 5;
             e.y = 5;
+            e.onMove = [this.map.update];
             // e.x = this.map.width - 2;
             // e.y = this.map.height - 2;
             this.addChild(e.sprite);
