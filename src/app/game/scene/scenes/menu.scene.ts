@@ -5,7 +5,7 @@ import Ticker = PIXI.ticker.Ticker;
 import Container = PIXI.Container;
 import Graphics = PIXI.Graphics;
 
-export class Menu extends Scene {
+export class TickerTestScene extends Scene {
 
     constructor(id: string) {
         super(id, new Container(), new Ticker());

@@ -13,6 +13,7 @@ export class Enemy extends Movable {
         this.sprite = new Sprite(loader.resources['player'].texture);
 
         this.sprite.tint = 0xff0000;
+        this.map.addEnemy(this);
     }
 
     doTurn(delay: number = this.moveSpeed): Enemy {

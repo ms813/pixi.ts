@@ -13,7 +13,7 @@ export class SceneManager {
         this.app = app;
     }
 
-    public static addScene(scene: Scene, options?: {overwrite: boolean}): Scene {
+    public static addScene(scene: Scene, options?: { overwrite: boolean }): Scene {
         const id: string = scene.id;
         if (SceneManager.scenes[id] && !options.overwrite) {
             console.warn(`Scene with ID: ${id} already exists!`);
@@ -68,5 +68,9 @@ export class SceneManager {
     public static goToPreviousScene() {
         SceneManager.goToScene(SceneManager.previousScene.id);
         console.debug('SceneManager::goToPreviousScene - Swapped current scene and previous scene');
+    }
+
+    public static getAllSceneIds(): string[] {
+        return Object.keys(SceneManager.scenes);
     }
 }

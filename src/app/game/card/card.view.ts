@@ -85,12 +85,10 @@ export class CardView extends Container {
             target = this.map.getMovableAt(x, y);
         }
 
-
         return {
             pX, pY,
             x, y,
-            tile,
-            target: target,
+            tile, target,
             card: this.card,
             player: this.map.player
         };
@@ -115,13 +113,12 @@ export class CardView extends Container {
         this.alpha = 1;
         this.dragging = false;
         this.dragData = null;
-        const {x, y} = this.getGlobalPosition();
+        const {x, y} = e.data.getLocalPosition(this.map);
 
         // make sure drag end is within the map bounds
         let dragEndData;
         try {
-            // add width/2 and height/2 as x,y refer to the card position, not the mouse pointer
-            dragEndData = this.getDragEndData(x + CardView.width / 2, y + CardView.height / 2);
+            dragEndData = this.getDragEndData(x, y);
         } catch (e) {
             // drag end was not within map bounds
             this.x = this.dragStart.x;

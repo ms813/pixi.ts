@@ -1,4 +1,3 @@
-import {Scene} from '@app/game/scene/scene';
 import {LevelMap} from '@app/game/map/level-map';
 import {LevelMapGenerator} from '@app/game/map/level-map.generator';
 import {Key} from '@app/game/keyboard.event';
@@ -9,6 +8,8 @@ import {HandView} from '@app/game/deck/hand.view';
 import {Enemy} from '@app/game/actor/enemy';
 import {Game} from '@app/game/game';
 import {CardDictionary} from '@app/game/card/dictionary/card-dictionary';
+import {Utils} from '@app/utils';
+import {Scene} from '@app/game/scene/scene';
 import Ticker = PIXI.ticker.Ticker;
 import Container = PIXI.Container;
 
@@ -28,7 +29,7 @@ export class LevelTestScene extends Scene {
         console.debug('map:', this.map);
 
         this.addChild(this.map);
-        const {enemies, player} = this.map;
+
         const cards = [];
         for (let i = 0; i < 10; i++) {
             const s = i % 2 == 0 ? 'revolver' : 'firstAid';
@@ -40,7 +41,6 @@ export class LevelTestScene extends Scene {
         this.player = new Player(new Deck(cards));
         this.player.x = 1;
         this.player.y = 1;
-        this.addChild(this.player.sprite);
         this.map.player = this.player;
 
         const handView: HandView = new HandView(this.player);
@@ -49,16 +49,21 @@ export class LevelTestScene extends Scene {
         this.player.onDiscard = [handView.discard];
         this.player.onMove = [this.map.update];
 
-        enemies.push(new Enemy('test-target', this.map));
-        enemies.forEach((e: Enemy) => {
+        for (let i = 0; i < 10; i++) {
+            const e = new Enemy(`test-target-${i}`, this.map);
             Game.turnClock.scheduleTurn(e, 2);
-            e.x = 5;
-            e.y = 5;
+
+            let x, y, tile;
+            do {
+                x = Utils.randomInt(1, this.map.width - 2);
+                y = Utils.randomInt(1, this.map.height - 2);
+                tile = this.map.getTileFromMapCoords(x, y);
+            } while (!tile.passable);
+
+            e.x = x;
+            e.y = y;
             e.onMove = [this.map.update];
-            // e.x = this.map.width - 2;
-            // e.y = this.map.height - 2;
-            this.addChild(e.sprite);
-        });
+        }
 
         // // draw some cards to test the deck
         // const drawTimeoutMillis: number = 1000;
@@ -85,17 +90,18 @@ export class LevelTestScene extends Scene {
         const {N, NE, E, SE, S, SW, W, NW} = Direction;
         const {player} = this.map;
         return [
-            Key.create('ArrowUp', () =>
-                player.move(N, this.map.isLegalMove(player.x, player.y, N))
-            ),
+            // move map
+            Key.create('ArrowUp', () => this.map.scroll(N)),
+            Key.create('ArrowDown', () => this.map.scroll(S)),
+            Key.create('ArrowLeft', () => this.map.scroll(W)),
+            Key.create('ArrowRight', () => this.map.scroll(E)),
+
+            // move player
             Key.create('Numpad8', () =>
                 player.move(N, this.map.isLegalMove(player.x, player.y, N))
             ),
             Key.create('Numpad9', () =>
                 player.move(NE, this.map.isLegalMove(player.x, player.y, NE))
-            ),
-            Key.create('ArrowRight', () =>
-                player.move(E, this.map.isLegalMove(player.x, player.y, E))
             ),
             Key.create('Numpad6', () =>
                 player.move(E, this.map.isLegalMove(player.x, player.y, E))
@@ -103,16 +109,10 @@ export class LevelTestScene extends Scene {
             Key.create('Numpad3', () =>
                 player.move(SE, this.map.isLegalMove(player.x, player.y, SE))
             ),
-            Key.create('ArrowDown', () =>
-                player.move(S, this.map.isLegalMove(player.x, player.y, S))
-            ),
             Key.create('Numpad2', () =>
                 player.move(S, this.map.isLegalMove(player.x, player.y, S))),
             Key.create('Numpad1', () =>
                 player.move(SW, this.map.isLegalMove(player.x, player.y, SW))
-            ),
-            Key.create('ArrowLeft', () =>
-                player.move(W, this.map.isLegalMove(player.x, player.y, W))
             ),
             Key.create('Numpad4', () =>
                 player.move(W, this.map.isLegalMove(player.x, player.y, W))
@@ -120,7 +120,8 @@ export class LevelTestScene extends Scene {
             Key.create('Numpad7', () =>
                 player.move(NW, this.map.isLegalMove(player.x, player.y, NW))
             ),
-            Key.create('Numpad5', () => player.doTurn(player.moveSpeed))
+            Key.create('Numpad5', () => player.doTurn(player.moveSpeed)),
+            Key.create('Enter', () => this.map.centerOn(this.player.x, this.player.y))
         ];
     }
 }

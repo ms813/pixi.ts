@@ -28,7 +28,6 @@ export class Button extends Container {
         super();
         this.resources = loader.resources['button'];
 
-        console.debug(loader.resources);
         this.sprite = new Sprite(this.resources.textures['button_up.png']);
         this.addChild(this.sprite);
 

@@ -5,6 +5,7 @@ import {Game} from '@app/game/game';
 import {Direction} from '@app/game/direction.enum';
 import Sprite = PIXI.Sprite;
 import loader = PIXI.loader;
+import Point = PIXI.Point;
 
 export class Player extends Movable {
     private _drawPile: Deck;
@@ -165,4 +166,13 @@ export class Player extends Movable {
     set currentDrawCooldown(value: number) {
         this._currentDrawCooldown = value;
     }
+
+    public get position(): Point {
+        return this.sprite.position;
+    }
+
+    public set position(position: Point) {
+        this.sprite.position = position;
+    }
+
 }

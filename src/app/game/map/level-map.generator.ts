@@ -1,6 +1,6 @@
 import {LevelMap} from './level-map';
 import {Tile} from '@app/game/map/tile';
-import {TILE_WIDTH} from '@app/game/game';
+import {TILE_SIZE} from '@app/game/game';
 import {TileType} from '@app/game/map/tile-type';
 import Resource = PIXI.loaders.Resource;
 import loader = PIXI.loader;
@@ -15,6 +15,7 @@ export class LevelMapGenerator {
 
     constructor(width: number, height: number) {
         this.resources = loader.resources['map_tiles'];
+
         this.map = this.init(new LevelMap(width, height));
     }
 
@@ -25,23 +26,23 @@ export class LevelMapGenerator {
             g.position.set(x, 0);
             return g.lineStyle(1, lineColor)
             .moveTo(0, 0)
-            .lineTo(0, this.map.height * TILE_WIDTH);
+            .lineTo(0, this.map.height * TILE_SIZE);
         };
         const addHorizontalLine = (y: number): Graphics => {
             const g = new Graphics();
             g.position.set(0, y);
             return g.lineStyle(1, lineColor)
             .moveTo(0, 0)
-            .lineTo(this.map.width * TILE_WIDTH, 0);
+            .lineTo(this.map.width * TILE_SIZE, 0);
         };
 
         const gridContainer = new Container();
         for (let x = 1; x < width; x++) {
-            gridContainer.addChild(addVerticalLine(x * TILE_WIDTH));
+            gridContainer.addChild(addVerticalLine(x * TILE_SIZE));
         }
 
         for (let y = 1; y < height; y++) {
-            gridContainer.addChild(addHorizontalLine(y * TILE_WIDTH));
+            gridContainer.addChild(addHorizontalLine(y * TILE_SIZE));
         }
 
         this.map.grid = gridContainer;
@@ -96,6 +97,6 @@ export class LevelMapGenerator {
     }
 
     public build(): LevelMap {
-        return this.map;
+       return this.map;
     }
 }

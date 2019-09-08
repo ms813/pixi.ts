@@ -1,5 +1,5 @@
 import {Direction} from '@app/game/direction.enum';
-import {TILE_WIDTH} from '@app/game/game';
+import {TILE_SIZE} from '@app/game/game';
 import Sprite = PIXI.Sprite;
 
 export abstract class Movable {
@@ -56,19 +56,19 @@ export abstract class Movable {
     }
 
     get x(): number {
-        return Math.floor(this.sprite.x / TILE_WIDTH);
+        return Math.floor(this.sprite.x / TILE_SIZE);
     }
 
     set x(x: number) {
-        this.sprite.x = Math.floor(TILE_WIDTH * x);
+        this.sprite.x = Math.floor(TILE_SIZE * x);
     }
 
     get y(): number {
-        return Math.floor(this.sprite.y / TILE_WIDTH);
+        return Math.floor(this.sprite.y / TILE_SIZE);
     }
 
     set y(y: number) {
-        this.sprite.y = Math.floor(TILE_WIDTH * y);
+        this.sprite.y = Math.floor(TILE_SIZE * y);
     }
 
     get hp(): number {

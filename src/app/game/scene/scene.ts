@@ -24,10 +24,16 @@ export abstract class Scene {
         };
 
         this.globalKeys.push(debugKey);
+
+        const sceneSelectKey = Key.create('Escape');
+        sceneSelectKey.press = () => {
+            SceneManager.goToScene('scene_select');
+        };
+        this.globalKeys.push(sceneSelectKey);
     }
 
     protected set keys(keys: Key[]) {
-        console.debug('setting keybindings', keys);
+        console.debug('Scene:set keys - Setting keybindings', keys);
         this._keys = keys;
     }
 
@@ -40,7 +46,7 @@ export abstract class Scene {
     }
 
     public unbindKeys(): void {
-        console.debug('unbinding keys', this._keys);
+        console.debug('Scene::unbindKeys - unbinding keys', this._keys);
         this._keys.forEach(e => e.unsubscribe());
         this.globalKeys.forEach(e => e.unsubscribe());
     }

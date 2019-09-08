@@ -2,7 +2,7 @@ import {Tile} from '@app/game/map/tile';
 import {Direction} from '@app/game/direction.enum';
 import {Player} from '@app/game/actor/player';
 import {Enemy} from '@app/game/actor/enemy';
-import {TILE_WIDTH} from '@app/game/game';
+import {Game, TILE_SIZE} from '@app/game/game';
 import {TileType} from '@app/game/map/tile-type';
 import {DragEndData} from '@app/game/card/drag-end.data';
 import {Movable} from '@app/game/actor/movable';
@@ -10,6 +10,10 @@ import Container = PIXI.Container;
 import loader = PIXI.loader;
 import Resource = PIXI.loaders.Resource;
 import Sprite = PIXI.Sprite;
+import InteractionData = PIXI.interaction.InteractionData;
+import InteractionEvent = PIXI.interaction.InteractionEvent;
+import Rectangle = PIXI.Rectangle;
+import Point = PIXI.Point;
 
 export class LevelMap extends Container {
 
@@ -17,19 +21,36 @@ export class LevelMap extends Container {
     private _tiles: Tile[] = [];
     private _width: number;
     private _height: number;
+    private pixelWidth: number;
+    private pixelHeight: number;
     private _grid: Container;
     private _enemies: Enemy[] = [];
     private _player: Player;
     private rangeIndicator: Container;
     private resources: Resource;
 
+    private dragging: boolean = false;
+    private dragStart: Point;
+    private dragData: InteractionData;
+
     constructor(width: number, height: number) {
         super();
-        this.width = width;
-        this.height = height;
+        this._width = width;
+        this._height = height;
+        this.pixelWidth = width * TILE_SIZE;
+        this.pixelHeight = height * TILE_SIZE;
         this.resources = loader.resources['map_tiles'];
         this.update = this.update.bind(this);
         this.rangeIndicator = new Container();
+
+        this.interactive = true;
+        this.buttonMode = true;
+        this.hitArea = new Rectangle(0, 0, Game.width, Game.height * 0.75);
+
+        this.on('mousedown', this.onDragStart)
+        .on('mouseup', this.onDragEnd)
+        .on('mouseupoutside', this.onDragEnd)
+        .on('mousemove', this.onDragMove);
     }
 
     public get height(): number {
@@ -42,10 +63,6 @@ export class LevelMap extends Container {
 
     public get width(): number {
         return this._width;
-    }
-
-    public set width(width: number) {
-        this._width = width;
     }
 
     get isGridVisible(): boolean {
@@ -84,14 +101,14 @@ export class LevelMap extends Container {
         if (this.player) {
             const {x, y} = this.player;
             this.tiles[this.coordsToIndex(x, y)].passable = false;
-            this.rangeIndicator.x = x * TILE_WIDTH;
-            this.rangeIndicator.y = y * TILE_WIDTH;
+            this.rangeIndicator.x = x * TILE_SIZE;
+            this.rangeIndicator.y = y * TILE_SIZE;
+            this.centerOn(x, y);
         }
 
         this._enemies.forEach(e => {
             const {x, y} = e;
             this.tiles[this.coordsToIndex(x, y)].passable = false;
-            this.removeChild(e.sprite);
         });
     }
 
@@ -141,29 +158,6 @@ export class LevelMap extends Container {
         return isMoveLegal[direction]();
     }
 
-    public set player(player: Player) {
-        this._player = player;
-        this.update();
-    }
-
-    public get player(): Player {
-        return this._player;
-    }
-
-    get enemies(): Enemy[] {
-        return this._enemies;
-    }
-
-    public addEnemy(...enemy: Enemy[]) {
-        this._enemies.push(...enemy);
-        this.update();
-    }
-
-    public removeEnemy(enemy: Enemy) {
-        this._enemies = this._enemies.filter(e => e != enemy);
-        this.update();
-    }
-
     public showRange = (x: number, y: number, range: number): void => {
         //highlight circle centered at (x, y) with radius = range
         console.debug(`LevelMap::showRange - Center=(${x}, ${y}), r=${range}`);
@@ -171,8 +165,8 @@ export class LevelMap extends Container {
         for (let i = -range; i <= range; i++) {
             for (let j = -range; j <= range; j++) {
                 const s: Sprite = new Sprite(this.resources.textures['test_tiles_2.png']);
-                s.x = i * TILE_WIDTH;
-                s.y = j * TILE_WIDTH;
+                s.x = i * TILE_SIZE;
+                s.y = j * TILE_SIZE;
                 this.rangeIndicator.addChild(s);
                 s.alpha = 0.3;
             }
@@ -184,14 +178,18 @@ export class LevelMap extends Container {
         this.rangeIndicator.removeChildren(0, this.rangeIndicator.children.length);
     }
 
-    public getTileFromPixelCoords(x: number, y: number): Tile {
-        return this.tiles[this.pixelCoordsToIndex(x, y)];
+    public getTileFromMapCoords(x: number, y: number): Tile {
+        return this.tiles[this.coordsToIndex(x, y)];
+    }
+
+    public getTileFromPixelCoords(pX: number, pY: number): Tile {
+        return this.tiles[this.pixelCoordsToIndex(pX, pY)];
     }
 
     public pixelCoordsToMapCoords(pX: number, pY: number): { x: number, y: number } {
         return {
-            x: Math.floor(pX / TILE_WIDTH),
-            y: Math.floor(pY / TILE_WIDTH)
+            x: Math.floor(pX / TILE_SIZE),
+            y: Math.floor(pY / TILE_SIZE)
         };
     }
 
@@ -215,5 +213,98 @@ export class LevelMap extends Container {
             return this.player;
         }
         return this.enemies.find((e: Enemy) => e.x === x && e.y === y);
+    }
+
+    public scroll(direction: Direction): LevelMap {
+        const moveFnMap: { [key: string]: (c: Container) => void } = {
+            [Direction.N]: (c: Container) => c.y -= TILE_SIZE,
+            [Direction.NE]: (c: Container) => {
+                c.x += TILE_SIZE;
+                c.y -= TILE_SIZE;
+            },
+            [Direction.E]: (c: Container) => c.x += TILE_SIZE,
+            [Direction.SE]: (c: Container) => {
+                c.x += TILE_SIZE;
+                c.y += TILE_SIZE;
+            },
+            [Direction.S]: (c: Container) => c.y += TILE_SIZE,
+            [Direction.SW]: (c: Container) => {
+                c.x -= TILE_SIZE;
+                c.y += TILE_SIZE;
+            },
+            [Direction.W]: (c: Container) => c.x -= TILE_SIZE,
+            [Direction.NW]: (c: Container) => {
+                c.x -= TILE_SIZE;
+                c.y -= TILE_SIZE;
+            }
+        };
+        moveFnMap[direction](this);
+        return this;
+    }
+
+    private screenCenter = (): Point => new Point(
+        (window.innerWidth < this.pixelWidth ? window.innerWidth : this.pixelWidth) / 2,
+        (window.innerHeight < this.pixelHeight ? window.innerHeight : this.pixelHeight) / 2
+    );
+
+
+    public centerOn(x: number, y: number): { x: number, y: number } {
+        const {x: cx, y: cy} = this.screenCenter();
+
+        this.x = (cx - x * TILE_SIZE);
+        this.y = (cy - y * TILE_SIZE);
+        return {x: this.x, y: this.y};
+    }
+
+    private onDragStart(e: InteractionEvent) {
+        this.dragData = e.data;
+        this.dragging = true;
+        const {x, y} = e.data.getLocalPosition(this.parent);
+        this.dragStart = new Point(x - this.x, y - this.y);
+    }
+
+    private onDragEnd() {
+        this.dragging = false;
+        this.dragData = null;
+    }
+
+    private onDragMove(e: InteractionEvent) {
+        if (this.dragging) {
+            const {x, y} = this.dragData.getLocalPosition(this.parent);
+            this.x = x - this.dragStart.x;
+            this.y = y - this.dragStart.y;
+        }
+    }
+
+    public set player(player: Player) {
+        this._player = player;
+        this.addChild(player.sprite);
+        this.update();
+    }
+
+    public get player(): Player {
+        return this._player;
+    }
+
+    public get enemies(): Enemy[] {
+        return this._enemies;
+    }
+
+    public set enemies(enemies: Enemy[]) {
+        this._enemies = enemies;
+        this._enemies.forEach(e => this.addChild(e.sprite));
+        this.update();
+    }
+
+    public addEnemy(enemy: Enemy) {
+        this._enemies.push(enemy);
+        this.addChild(enemy.sprite);
+        this.update();
+    }
+
+    public removeEnemy(enemy: Enemy) {
+        this._enemies = this._enemies.filter(e => e != enemy);
+        this.removeChild(enemy.sprite);
+        this.update();
     }
 }
