@@ -251,9 +251,9 @@ export class LevelMap extends Container {
     public centerOn(x: number, y: number): { x: number, y: number } {
         const {x: cx, y: cy} = this.screenCenter();
 
-        this.x = (cx - x * TILE_SIZE);
-        this.y = (cy - y * TILE_SIZE);
-        return {x: this.x, y: this.y};
+        const dx = (cx - x * TILE_SIZE);
+        const dy = (cy - y * TILE_SIZE);
+        return this.snapToDragLimit(dx, dy);
     }
 
     private onDragStart(e: InteractionEvent) {
@@ -271,9 +271,37 @@ export class LevelMap extends Container {
     private onDragMove(e: InteractionEvent) {
         if (this.dragging) {
             const {x, y} = this.dragData.getLocalPosition(this.parent);
-            this.x = x - this.dragStart.x;
-            this.y = y - this.dragStart.y;
+
+            let dx = x - this.dragStart.x;
+            let dy = y - this.dragStart.y;
+            this.snapToDragLimit(dx, dy);
         }
+    }
+
+    private snapToDragLimit(x: number, y: number): Point {
+        const {x: cx, y: cy} = this.screenCenter();
+        if (x > cx / 2) {
+            x = cx / 2;
+        }
+
+        // prevent map being dragged off the right of the screen
+        if (x + this.pixelWidth < cx * (3 / 2)) {
+            x = cx * (3 / 2) - this.pixelWidth;
+        }
+
+        // prevent map being dragged off the bottom of the screen
+        if (y > cy / 2) {
+            y = cy / 2;
+        }
+
+        // prevent map being dragged off the top of the screen
+        if (y + this.pixelHeight < cy * (3 / 2)) {
+            y = cy * (3 / 2) - this.pixelHeight;
+        }
+        this.x = x;
+        this.y = y;
+
+        return new Point(x, y);
     }
 
     public set player(player: Player) {
