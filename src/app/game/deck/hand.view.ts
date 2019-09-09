@@ -127,9 +127,10 @@ export class HandView extends Container {
         );
 
         // add the newly drawn cards at the left of the hand
-        cards.forEach((card: Card, i: number) =>
-            card.view.x = i * (CardView.width + this.spacing)
-        );
+        cards.forEach((card: Card, i: number) => {
+            card.view.y = 0;
+            card.view.x = i * (CardView.width + this.spacing);
+        });
         this.handContainer.addChild(...cards.map(c => c.view));
     }
 

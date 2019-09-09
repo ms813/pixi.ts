@@ -44,6 +44,13 @@ export class Player extends Movable {
     }
 
     public doTurn(delay: number): Player {
+        this.currentDrawCooldown -= delay;
+        console.debug(`Player::move - Draw cooldown: ${this.currentDrawCooldown}`);
+        if (this.currentDrawCooldown <= 0) {
+            this.draw();
+            this.currentDrawCooldown = this.drawCooldown;
+        }
+
         console.debug('Player::doTurn - turn start');
         Game.turnClock.scheduleTurn(this, delay);
         Game.turnClock.nextTurn();
@@ -90,12 +97,7 @@ export class Player extends Movable {
         const prevPos = {x: this.x, y: this.y};
         if (isLegalMove) {
             const movePos = super.move(direction, isLegalMove);
-            this.currentDrawCooldown -= this.moveSpeed;
-            console.debug(`Player::move - Draw cooldown: ${this.currentDrawCooldown}`);
-            if (this.currentDrawCooldown <= 0) {
-                this.draw();
-                this.currentDrawCooldown = this.drawCooldown;
-            }
+
 
             this.doTurn(this.moveSpeed);
             return movePos;

@@ -1,16 +1,23 @@
 import {Direction} from '@app/game/direction.enum';
 import {TILE_SIZE} from '@app/game/game';
+import {HealthBar} from '@app/game/actor/health-bar';
 import Sprite = PIXI.Sprite;
 
 export abstract class Movable {
 
     private _sprite: Sprite;
     protected _moveSpeed: number = 100;
-    private _hp: number = 100;
+    private _maxHp: number;
+    private _currentHp: number;
+    private healthBar: HealthBar;
+
+    public onDeath: Function[] = [];
 
     public onMove: ((prevPos: { x: number, y: number }, nextPos: { x: number, y: number }) => void)[];
 
-    protected constructor(public readonly id: string) {}
+    protected constructor(public readonly id: string) {
+        this.maxHp = 10;
+    }
 
     public static readonly moveFnMap: { [key: string]: (m: Movable) => void } = {
         [Direction.N]: (m: Movable) => --m.y,
@@ -52,7 +59,13 @@ export abstract class Movable {
     }
 
     set sprite(value: Sprite) {
+
         this._sprite = value;
+
+        this.sprite.addChild(this.healthBar);
+
+        //@ts-ignore
+        console.log(this.sprite.children[0].children.map(c => c.width).join(','));
     }
 
     get x(): number {
@@ -71,14 +84,47 @@ export abstract class Movable {
         this.sprite.y = Math.floor(TILE_SIZE * y);
     }
 
-    get hp(): number {
-        return this._hp;
+    get maxHp(): number {
+        return this._maxHp;
     }
 
-    set hp(value: number) {
-        const diff = this._hp - value;
-        console.debug(`${this.id} ${diff > 0 ? 'damaged' : 'healed'} for ${Math.abs(diff)}. Hp before: ${this._hp}, hp after:${value}`);
-        this._hp = value;
+    set maxHp(newMaxHp: number) {
+        if(!this.healthBar){
+            this.healthBar = new HealthBar();
+        }
+
+        this.healthBar.maxHp = newMaxHp;
+
+        const oldMaxHp = this.maxHp;
+        if (newMaxHp > oldMaxHp) {
+            this.currentHp += newMaxHp - oldMaxHp;
+        } else {
+            this.currentHp = this._currentHp || newMaxHp;
+        }
+
+        this._maxHp = newMaxHp;
+        console.log(`max: ${this.maxHp}. current: ${this.currentHp}`);
+    }
+
+    get currentHp(): number {
+        return this._currentHp;
+    }
+
+    set currentHp(newHp: number) {
+
+        // clamp current hp so it can't go above max hp
+        if (newHp > this.maxHp) {
+            newHp = this.maxHp;
+        }
+
+        const diff = this._currentHp - newHp;
+        console.debug(`${this.id} ${diff > 0 ? 'damaged' : 'healed'} for ${Math.abs(diff)}. Hp before: ${this._currentHp}, hp after:${newHp}`);
+
+        this._currentHp = newHp;
+        this.healthBar.currentHp = this._currentHp;
+        if (this._currentHp <= 0) {
+            this.onDeath.forEach(fn => fn(this));
+        }
     }
 
     get moveSpeed(): number {

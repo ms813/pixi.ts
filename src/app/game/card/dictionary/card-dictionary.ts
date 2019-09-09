@@ -27,8 +27,8 @@ export interface CardActionDefinition {
 }
 
 export const CardActionDictionary: { [key: string]: (defn: CardActionDefinition) => (d: DragEndData, options?: any) => any } = {
-    damage: (defn: CardActionDefinition) => ({target}: DragEndData) => target.hp -= defn.value,
-    heal: (defn: CardActionDefinition) => ({target}: DragEndData) => target.hp += defn.value
+    damage: (defn: CardActionDefinition) => ({target}: DragEndData) => target.currentHp -= defn.value,
+    heal: (defn: CardActionDefinition) => ({target}: DragEndData) => target.currentHp += defn.value
 };
 
 class CardBuilder {

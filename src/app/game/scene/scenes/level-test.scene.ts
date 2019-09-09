@@ -63,20 +63,8 @@ export class LevelTestScene extends Scene {
             e.x = x;
             e.y = y;
             e.onMove = [this.map.update];
+            e.onDeath = [this.map.removeEnemy]
         }
-
-        // // draw some cards to test the deck
-        // const drawTimeoutMillis: number = 1000;
-        // let millisLeftUntilDraw: number = drawTimeoutMillis;
-        // this.ticker.add((delta: number) => {
-        //     if (millisLeftUntilDraw <= 0) {
-        //         const {drawPile, hand, discardPile} = player;
-        //         console.debug(`Before draw - draw: ${drawPile.length}, hand: ${hand.length}, discard: ${discardPile.length}`);
-        //         player.draw();
-        //         millisLeftUntilDraw = drawTimeoutMillis;
-        //     }
-        //     millisLeftUntilDraw -= this.ticker.elapsedMS;
-        // });
 
         // put some cards in the players hand to start
         while (this.player.hand.length < 3) {

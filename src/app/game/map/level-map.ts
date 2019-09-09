@@ -41,6 +41,7 @@ export class LevelMap extends Container {
         this.pixelHeight = height * TILE_SIZE;
         this.resources = loader.resources['map_tiles'];
         this.update = this.update.bind(this);
+        this.removeEnemy = this.removeEnemy.bind(this);
         this.rangeIndicator = new Container();
 
         this.interactive = true;
