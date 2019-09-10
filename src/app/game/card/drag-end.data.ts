@@ -1,4 +1,4 @@
-import {Tile} from '@app/game/map/tile';
+import {Tile} from '@app/game/map/tile/tile';
 import {Card} from '@app/game/card/card';
 import {Player} from '@app/game/actor/player';
 import {Movable} from '@app/game/actor/movable';

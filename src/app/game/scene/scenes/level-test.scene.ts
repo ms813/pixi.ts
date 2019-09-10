@@ -23,8 +23,8 @@ export class LevelTestScene extends Scene {
 
         this.map = new LevelMapGenerator(32, 17)
         .grid(0xcccccc)
-        // .randomWalls(0.3)
-        .build();
+        .randomWalls(0.3)
+        .build();3
 
         console.debug('map:', this.map);
 

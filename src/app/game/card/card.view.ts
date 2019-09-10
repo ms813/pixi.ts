@@ -5,12 +5,13 @@ import Graphics = PIXI.Graphics;
 import Rectangle = PIXI.Rectangle;
 import InteractionData = PIXI.interaction.InteractionData;
 import InteractionEvent = PIXI.interaction.InteractionEvent;
+import {LevelMap} from '@app/game/map';
 import {Card} from '@app/game/card/card';
-import {Tile} from '@app/game/map/tile';
-import {TargetingType} from '@app/game/card/targeting-type';
-import {LevelMap} from '@app/game/map/level-map';
 import {DragEndData} from '@app/game/card/drag-end.data';
-import {Movable} from '@app/game/actor/movable';
+import {Tile} from '@app/game/map/tile';
+import {Movable} from '@app/game/actor';
+import {TargetingType} from '@app/game/card/targeting-type';
+
 
 export class CardView extends Container {
 

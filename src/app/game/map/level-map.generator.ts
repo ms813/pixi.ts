@@ -1,7 +1,7 @@
 import {LevelMap} from './level-map';
-import {Tile} from '@app/game/map/tile';
+import {Tile} from '@app/game/map/tile/tile';
 import {TILE_SIZE} from '@app/game/game';
-import {TileType} from '@app/game/map/tile-type';
+import {TileType} from '@app/game/map/tile/tile-type';
 import Resource = PIXI.loaders.Resource;
 import loader = PIXI.loader;
 import Container = PIXI.Container;
@@ -61,11 +61,11 @@ export class LevelMapGenerator {
         const tiles: Tile[] = [];
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
-                let texture: Texture = textures['test_tiles_3.png'];
+                let texture: Texture = textures['floor.png'];
                 let tileType: TileType = TileType.FLOOR;
                 // map bounds are impassible
                 if (x === 0 || y === 0 || x === width - 1 || y === height - 1) {
-                    texture = textures['test_tiles_0.png'];
+                    texture = textures['indestructable_wall.png'];
                     tileType = TileType.INDESTRUCTABLE_WALL;
                 }
 
@@ -88,7 +88,7 @@ export class LevelMapGenerator {
                 if (Math.random() < density) {
                     const t = tiles[this.map.coordsToIndex(x, y)];
                     t.type = TileType.WALL;
-                    t.texture = this.resources.textures['test_tiles_0.png'];
+                    t.discoveredTexture = this.resources.textures['wall.png'];
                 }
             }
         }

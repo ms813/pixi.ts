@@ -1,11 +1,8 @@
-import {Tile} from '@app/game/map/tile';
-import {Direction} from '@app/game/direction.enum';
-import {Player} from '@app/game/actor/player';
-import {Enemy} from '@app/game/actor/enemy';
-import {Game, TILE_SIZE} from '@app/game/game';
-import {TileType} from '@app/game/map/tile-type';
-import {DragEndData} from '@app/game/card/drag-end.data';
-import {Movable} from '@app/game/actor/movable';
+import {Utils} from '@app/utils';
+import {Shadow, ShadowLine} from '@app/game/map/shadow';
+import {Tile, TileType} from '@app/game/map/tile';
+import {Enemy, Movable, Player} from '@app/game/actor';
+import {DragEndData} from '@app/game/card';
 import Container = PIXI.Container;
 import loader = PIXI.loader;
 import Resource = PIXI.loaders.Resource;
@@ -14,6 +11,8 @@ import InteractionData = PIXI.interaction.InteractionData;
 import InteractionEvent = PIXI.interaction.InteractionEvent;
 import Rectangle = PIXI.Rectangle;
 import Point = PIXI.Point;
+import {Game, TILE_SIZE} from '@app/game/game';
+import {Direction} from '@app/game/direction.enum';
 
 export class LevelMap extends Container {
 
@@ -105,6 +104,10 @@ export class LevelMap extends Container {
             this.rangeIndicator.x = x * TILE_SIZE;
             this.rangeIndicator.y = y * TILE_SIZE;
             this.centerOn(x, y);
+            for (let i = 0; i < 8; i++) {
+                this.refreshOctant(x, y, i);
+            }
+
         }
 
         this._enemies.forEach(e => {
@@ -134,6 +137,10 @@ export class LevelMap extends Container {
             x: i % this.width,
             y: Math.floor(i / this.width)
         };
+    }
+
+    public isInBounds(x: number, y: number): boolean {
+        return x >= 0 && y >= 0 && x < this.width && y < this.height;
     }
 
     isLegalMove(x: number, y: number, direction: Direction): boolean {
@@ -306,6 +313,8 @@ export class LevelMap extends Container {
     }
 
     public set player(player: Player) {
+        const {x, y} = player;
+        this.tiles[this.coordsToIndex(x, y)].isVisible = true;
         this._player = player;
         this.addChild(player.sprite);
         this.update();
@@ -335,5 +344,41 @@ export class LevelMap extends Container {
         this._enemies = this._enemies.filter(e => e != enemy);
         this.removeChild(enemy.sprite);
         this.update();
+    }
+
+    public refreshOctant(pX: number, pY: number, octant: number) {
+        const line = new ShadowLine();
+        let fullShadow = false;
+
+        for (let row = 1; ; row++) {
+            const {x, y} = Utils.transformOctant(row, 0, octant);
+            if (!this.isInBounds(pX + x, pY + y)) break;
+
+            for (let col = 0; col <= row; col++) {
+                const {x, y} = Utils.transformOctant(row, col, octant);
+                if (!this.isInBounds(pX + x, pY + y)) break;
+
+                const tile = this.tiles[this.coordsToIndex(pX + x, pY + y)];
+                if (fullShadow) {
+                    tile.isVisible = false;
+                } else {
+                    let projection: Shadow = this.projectTile(row, col);
+
+                    let visible: boolean = !line.isInShadow(projection);
+                    tile.isVisible = visible;
+
+                    if (visible && (tile.type === TileType.WALL || tile.type === TileType.INDESTRUCTABLE_WALL)) {
+                        line.add(projection);
+                        fullShadow = line.isFullShadow;
+                    }
+                }
+            }
+        }
+    }
+
+    projectTile(row: number, col: number): Shadow {
+        const topLeft = col / row + 2;
+        const bottomRight = (col + 1) / (row + 1);
+        return new Shadow(topLeft, bottomRight);
     }
 }

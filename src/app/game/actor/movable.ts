@@ -63,9 +63,6 @@ export abstract class Movable {
         this._sprite = value;
 
         this.sprite.addChild(this.healthBar);
-
-        //@ts-ignore
-        console.log(this.sprite.children[0].children.map(c => c.width).join(','));
     }
 
     get x(): number {
@@ -89,7 +86,7 @@ export abstract class Movable {
     }
 
     set maxHp(newMaxHp: number) {
-        if(!this.healthBar){
+        if (!this.healthBar) {
             this.healthBar = new HealthBar();
         }
 
@@ -103,7 +100,6 @@ export abstract class Movable {
         }
 
         this._maxHp = newMaxHp;
-        console.log(`max: ${this.maxHp}. current: ${this.currentHp}`);
     }
 
     get currentHp(): number {

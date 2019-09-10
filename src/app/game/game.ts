@@ -1,16 +1,18 @@
 import {Application, loader} from 'pixi.js';
-import {DeckScene} from '@app/game/scene/scenes/deck.scene';
-import {Deck} from '@app/game/deck/deck';
-import {SceneManager} from '@app/game/scene/scene-manager';
-import {TickerTestScene} from '@app/game/scene/scenes/menu.scene';
-import {DebugScene} from '@app/game/scene/scenes/debug.scene';
-import {LevelTestScene} from '@app/game/scene/scenes/level-test.scene';
-import {Scene} from '@app/game/scene/scene';
-import {Card} from '@app/game/card/card';
-import {TurnClock} from '@app/game/turnclock';
-import {SceneSelectScene} from '@app/game/scene/scenes/scene-select.scene';
-import {MapGenScene} from '@app/game/scene/scenes/map-gen.scene';
+
 import Container = PIXI.Container;
+import {TurnClock} from '@app/game/turnclock';
+import {Scene, SceneManager} from '@app/game/scene';
+import {
+    DebugScene,
+    DeckScene,
+    LevelTestScene,
+    MapGenScene,
+    SceneSelectScene,
+    TickerTestScene
+} from '@app/game/scene/scenes';
+import {Card} from '@app/game/card';
+import {Deck} from '@app/game/deck';
 
 export const TILE_SIZE: number = 32;
 

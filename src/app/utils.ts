@@ -1,3 +1,5 @@
+import Point = PIXI.Point;
+
 export class Utils {
     public static randomInt(min: number, max: number): number {
         min = Math.ceil(min);
@@ -11,5 +13,26 @@ export class Utils {
         .filter(n => !Number.isNaN(n)) as unknown as T[keyof T][];
         const randomIndex = Math.floor(Math.random() * enumValues.length);
         return enumValues[randomIndex];
+    }
+
+    public static transformOctant(row: number, col: number, octant: number): Point {
+        switch (octant) {
+            case 0:
+                return new Point(col, -row);
+            case 1:
+                return new Point(row, -col);
+            case 2:
+                return new Point(row, col);
+            case 3:
+                return new Point(col, row);
+            case 4:
+                return new Point(-col, row);
+            case 5:
+                return new Point(-row, col);
+            case 6:
+                return new Point(-row, -col);
+            case 7:
+                return new Point(-col, -row);
+        }
     }
 }
