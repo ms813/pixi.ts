@@ -3,6 +3,8 @@ import {Shadow, ShadowLine} from '@app/game/map/shadow';
 import {Tile, TileType} from '@app/game/map/tile';
 import {Enemy, Movable, Player} from '@app/game/actor';
 import {DragEndData} from '@app/game/card';
+import {Game, TILE_SIZE} from '@app/game/game';
+import {Direction} from '@app/game/direction.enum';
 import Container = PIXI.Container;
 import loader = PIXI.loader;
 import Resource = PIXI.loaders.Resource;
@@ -11,8 +13,6 @@ import InteractionData = PIXI.interaction.InteractionData;
 import InteractionEvent = PIXI.interaction.InteractionEvent;
 import Rectangle = PIXI.Rectangle;
 import Point = PIXI.Point;
-import {Game, TILE_SIZE} from '@app/game/game';
-import {Direction} from '@app/game/direction.enum';
 
 export class LevelMap extends Container {
 
@@ -107,7 +107,6 @@ export class LevelMap extends Container {
             for (let i = 0; i < 8; i++) {
                 this.refreshOctant(x, y, i);
             }
-
         }
 
         this._enemies.forEach(e => {
@@ -314,7 +313,6 @@ export class LevelMap extends Container {
 
     public set player(player: Player) {
         const {x, y} = player;
-        this.tiles[this.coordsToIndex(x, y)].isVisible = true;
         this._player = player;
         this.addChild(player.sprite);
         this.update();
@@ -349,8 +347,8 @@ export class LevelMap extends Container {
     public refreshOctant(pX: number, pY: number, octant: number) {
         const line = new ShadowLine();
         let fullShadow = false;
-
-        for (let row = 1; ; row++) {
+        const visionRadius = 5;
+        for (let row = 0; ; row++) {
             const {x, y} = Utils.transformOctant(row, 0, octant);
             if (!this.isInBounds(pX + x, pY + y)) break;
 
@@ -364,7 +362,7 @@ export class LevelMap extends Container {
                 } else {
                     let projection: Shadow = this.projectTile(row, col);
 
-                    let visible: boolean = !line.isInShadow(projection);
+                    let visible: boolean = !line.isInShadow(projection) && row <= visionRadius && col <= visionRadius;
                     tile.isVisible = visible;
 
                     if (visible && (tile.type === TileType.WALL || tile.type === TileType.INDESTRUCTABLE_WALL)) {
@@ -377,7 +375,7 @@ export class LevelMap extends Container {
     }
 
     projectTile(row: number, col: number): Shadow {
-        const topLeft = col / row + 2;
+        const topLeft = col / (row + 2);
         const bottomRight = (col + 1) / (row + 1);
         return new Shadow(topLeft, bottomRight);
     }

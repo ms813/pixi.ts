@@ -11,6 +11,7 @@ export class Tile extends Sprite {
     private _isVisible: boolean;
     private _isDiscovered: boolean;
     private _discoveredTexture: Texture;
+    private previousTint: number;
 
     private static undiscoveredTexture: Texture;
 
@@ -34,14 +35,14 @@ export class Tile extends Sprite {
         this.interactive = true;
         this.on('mouseover', () => this.tint = 0x00ffff);
         this.on('mousedown', () => console.log(TileType[this.type]));
-        this.on('mouseout', () => this.tint = 0xffffff);
+        this.on('mouseout', () => this.tint = this.previousTint);
 
         this.isDiscovered = false;
         this.isVisible = false;
     }
 
     public set type(type: TileType) {
-        this._type = type;
+        this._type = type;3
         this.passable = type === TileType.FLOOR;
     }
 
@@ -58,10 +59,12 @@ export class Tile extends Sprite {
 
         if (this._isVisible) {
             this.isDiscovered = true;
-            this.tint = 0xffffff;
+            this.previousTint = 0xffffff;
         } else {
-            this.tint = 0xcccccc;
+            this.previousTint = 0xcccccc;
         }
+
+        this.tint = this.previousTint;
     }
 
     get isDiscovered(): boolean {

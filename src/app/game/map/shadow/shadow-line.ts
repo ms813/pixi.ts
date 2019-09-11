@@ -1,10 +1,15 @@
-import {Shadow} from '@app/game/map/shadow/shadow.model';
+import {Shadow} from '@app/game/map/shadow/shadow';
 
 export class ShadowLine {
     shadows: Shadow[] = [];
 
     isInShadow(projection: Shadow): boolean {
-        return !!this.shadows.find(s => s.contains(projection));
+        for (let i = 0; i < this.shadows.length; i++) {
+            const shadow = this.shadows[i];
+            if (shadow.contains(projection)) return true;
+        }
+        return false;
+        // return !!this.shadows.find(s => s.contains(projection));
     }
 
     add(shadow: Shadow): void {
@@ -40,6 +45,6 @@ export class ShadowLine {
     }
 
     get isFullShadow(): boolean {
-        return this.shadows.length == 1 && this.shadows[0].start == 0 && this.shadows[0].end == 1;
+        return this.shadows.length === 1 && this.shadows[0].start === 0 && this.shadows[0].end === 1;
     }
 }

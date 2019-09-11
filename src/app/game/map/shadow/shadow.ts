@@ -1,5 +1,3 @@
-
-
 export class Shadow {
 
     constructor(public start: number, public end: number) {}

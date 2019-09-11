@@ -37,7 +37,7 @@ export class TurnClock {
     }
 
     public scheduleTurn(actor: Movable, delta: number) {
-        console.debug(`TurnClock::scheduleTurn - Scheduling turn for %c${actor.id}%c on turn ${this.currentTurn + delta}`,  `color:${actor instanceof Player ? 'green' : 'red'}`,'color:black');
+        console.debug(`TurnClock::scheduleTurn - Scheduling turn for %c${actor.id}%c on turn ${this.currentTurn + delta}`, `color:${actor instanceof Player ? 'green' : 'red'}`, 'color:black');
         const turn = this.currentTurn + delta;
         if (!this.turnSchedule[turn]) {
             this.turnSchedule[turn] = [];

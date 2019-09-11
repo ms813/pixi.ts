@@ -1,2 +1,2 @@
-export * from './shadow.model'
-export * from './shadow-line.model'
+export * from './shadow'
+export * from './shadow-line'

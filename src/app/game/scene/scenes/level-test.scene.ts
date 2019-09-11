@@ -24,7 +24,8 @@ export class LevelTestScene extends Scene {
         this.map = new LevelMapGenerator(32, 17)
         .grid(0xcccccc)
         .randomWalls(0.3)
-        .build();3
+        .build();
+        3;
 
         console.debug('map:', this.map);
 
@@ -63,7 +64,7 @@ export class LevelTestScene extends Scene {
             e.x = x;
             e.y = y;
             e.onMove = [this.map.update];
-            e.onDeath = [this.map.removeEnemy]
+            e.onDeath = [this.map.removeEnemy];
         }
 
         // put some cards in the players hand to start
@@ -73,6 +74,7 @@ export class LevelTestScene extends Scene {
 
         this.keys = this.getKeybindings();
     }
+
 
     private getKeybindings(): Key[] {
         const {N, NE, E, SE, S, SW, W, NW} = Direction;
