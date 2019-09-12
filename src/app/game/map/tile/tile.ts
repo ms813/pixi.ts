@@ -3,6 +3,7 @@ import Texture = PIXI.Texture;
 import loader = PIXI.loader;
 import {TileType} from '@app/game/map/tile/tile-type';
 import {TILE_SIZE} from '@app/game/game';
+import {Movable} from '@app/game/actor';
 
 export class Tile extends Sprite {
 
@@ -16,8 +17,8 @@ export class Tile extends Sprite {
     private static undiscoveredTexture: Texture;
 
     constructor(
-        x: number,
-        y: number,
+        public readonly mapX: number,
+        public readonly mapY: number,
         texture: Texture,
         type: TileType = TileType.FLOOR
     ) {
@@ -28,13 +29,14 @@ export class Tile extends Sprite {
 
         this.discoveredTexture = texture;
 
-        this.x = x * TILE_SIZE;
-        this.y = y * TILE_SIZE;
+
+        this.x = mapX * TILE_SIZE;
+        this.y = mapY * TILE_SIZE;
         this.type = type;
 
         this.interactive = true;
         this.on('mouseover', () => this.tint = 0x00ffff);
-        this.on('mousedown', () => console.log(TileType[this.type]));
+        this.on('mousedown', () => console.log(`Clicked on tile at (${this.mapX}, ${this.mapY}): ${TileType[this.type]}`));
         this.on('mouseout', () => this.tint = this.previousTint);
 
         this.isDiscovered = false;
@@ -42,7 +44,7 @@ export class Tile extends Sprite {
     }
 
     public set type(type: TileType) {
-        this._type = type;3
+        this._type = type;
         this.passable = type === TileType.FLOOR;
     }
 
@@ -87,6 +89,10 @@ export class Tile extends Sprite {
 
     set discoveredTexture(value: Texture) {
         this._discoveredTexture = value;
+    }
+
+    public contains({x, y}: Movable): boolean {
+        return this.mapX === x && this.mapY === y;
     }
 }
 

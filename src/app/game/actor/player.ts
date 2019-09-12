@@ -13,6 +13,8 @@ export class Player extends Movable {
     private _burnPile: Deck;
     private _hand: Deck;
     private _deck: Deck;
+    public visionRadius = 5;
+    public detectionRadius = 0; // can see enemies even through walls up to this radius
 
     private _drawCooldown: number = 500;
     private _currentDrawCooldown: number;

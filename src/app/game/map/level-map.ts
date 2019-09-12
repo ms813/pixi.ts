@@ -111,8 +111,30 @@ export class LevelMap extends Container {
 
         this._enemies.forEach(e => {
             const {x, y} = e;
-            this.tiles[this.coordsToIndex(x, y)].passable = false;
+            const tile = this.tiles[this.coordsToIndex(x, y)];
+            tile.passable = false;
+            this.setActorVisibility(e, tile);
         });
+    }
+
+    setActorVisibility(actor: Movable, tile: Tile): boolean {
+        const {x: ax, y: ay} = actor;
+        const {x: px, y: py} = this.player;
+        const isWithinDetectionRange = Utils.isWithinSquare(ax, ay, px, py, this.player.detectionRadius);
+
+        if (isWithinDetectionRange) {
+            actor.visible = true;;
+            return true;
+        }
+
+        if (tile.isVisible && !actor.visible) {
+            console.log(tile.isVisible)
+            actor.visible = true
+            return true;
+        } else if (!tile.isVisible && actor.visible) {
+            actor.visible = false;
+            return false;
+        }
     }
 
     public coordsToIndex(x: number, y: number): number {
@@ -312,7 +334,6 @@ export class LevelMap extends Container {
     }
 
     public set player(player: Player) {
-        const {x, y} = player;
         this._player = player;
         this.addChild(player.sprite);
         this.update();
@@ -347,7 +368,6 @@ export class LevelMap extends Container {
     public refreshOctant(pX: number, pY: number, octant: number) {
         const line = new ShadowLine();
         let fullShadow = false;
-        const visionRadius = 5;
         for (let row = 0; ; row++) {
             const {x, y} = Utils.transformOctant(row, 0, octant);
             if (!this.isInBounds(pX + x, pY + y)) break;
@@ -362,6 +382,7 @@ export class LevelMap extends Container {
                 } else {
                     let projection: Shadow = this.projectTile(row, col);
 
+                    const {visionRadius} = this.player;
                     let visible: boolean = !line.isInShadow(projection) && row <= visionRadius && col <= visionRadius;
                     tile.isVisible = visible;
 

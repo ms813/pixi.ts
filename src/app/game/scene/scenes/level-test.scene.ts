@@ -10,6 +10,7 @@ import {Game} from '@app/game/game';
 import {CardDictionary} from '@app/game/card/dictionary/card-dictionary';
 import {Utils} from '@app/utils';
 import {Scene} from '@app/game/scene/scene';
+import {TileType} from '@app/game/map/tile';
 import Ticker = PIXI.ticker.Ticker;
 import Container = PIXI.Container;
 
@@ -25,7 +26,6 @@ export class LevelTestScene extends Scene {
         .grid(0xcccccc)
         .randomWalls(0.3)
         .build();
-        3;
 
         console.debug('map:', this.map);
 
@@ -40,8 +40,12 @@ export class LevelTestScene extends Scene {
         }
 
         this.player = new Player(new Deck(cards));
-        this.player.x = 1;
-        this.player.y = 1;
+        do {
+            this.player.x = Utils.randomInt(1, this.map.width - 2);
+            this.player.y = Utils.randomInt(1, this.map.height - 2);
+        } while (this.map.tiles[this.map.coordsToIndex(this.player.x, this.player.y)].type !== TileType.FLOOR);
+
+
         this.map.player = this.player;
 
         const handView: HandView = new HandView(this.player);
@@ -73,6 +77,7 @@ export class LevelTestScene extends Scene {
         }
 
         this.keys = this.getKeybindings();
+        this.map.update();
     }
 
 
@@ -81,10 +86,10 @@ export class LevelTestScene extends Scene {
         const {player} = this.map;
         return [
             // move map
-            Key.create('ArrowUp', () => this.map.scroll(N)),
-            Key.create('ArrowDown', () => this.map.scroll(S)),
-            Key.create('ArrowLeft', () => this.map.scroll(W)),
-            Key.create('ArrowRight', () => this.map.scroll(E)),
+            Key.create('ArrowUp', () => this.map.scroll(S)),
+            Key.create('ArrowDown', () => this.map.scroll(N)),
+            Key.create('ArrowLeft', () => this.map.scroll(E)),
+            Key.create('ArrowRight', () => this.map.scroll(W)),
 
             // move player
             Key.create('Numpad8', () =>

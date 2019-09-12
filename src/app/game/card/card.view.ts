@@ -11,6 +11,7 @@ import {DragEndData} from '@app/game/card/drag-end.data';
 import {Tile} from '@app/game/map/tile';
 import {Movable} from '@app/game/actor';
 import {TargetingType} from '@app/game/card/targeting-type';
+import {Utils} from '@app/utils';
 
 
 export class CardView extends Container {
@@ -65,14 +66,6 @@ export class CardView extends Container {
 
     public hideRange() {
         this.map.hideRange();
-    }
-
-    public isWithinRange(x: number, y: number): boolean {
-        const {player} = this.map;
-        return x <= player.x + this.card.range
-            && x >= player.x - this.card.range
-            && y <= player.y + this.card.range
-            && y >= player.y - this.card.range;
     }
 
     public getDragEndData(pX: number, pY: number): DragEndData {
@@ -151,7 +144,8 @@ export class CardView extends Container {
             return true;
         }
 
-        if (!this.isWithinRange(x, y)) {
+        const {x: px, y: py} = this.map.player;
+        if (!Utils.isWithinSquare(x, y, px, py, this.card.range)) {
             return false;
         }
 

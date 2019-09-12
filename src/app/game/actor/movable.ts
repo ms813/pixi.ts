@@ -10,6 +10,7 @@ export abstract class Movable {
     private _maxHp: number;
     private _currentHp: number;
     private healthBar: HealthBar;
+    private _visible: boolean;
 
     public onDeath: Function[] = [];
 
@@ -129,5 +130,14 @@ export abstract class Movable {
 
     set moveSpeed(moveSpeed: number) {
         this._moveSpeed = moveSpeed;
+    }
+
+    get visible(): boolean {
+        return this._visible;
+    }
+
+    set visible(value: boolean) {
+        this._visible = value;
+        this.sprite.visible = value;
     }
 }

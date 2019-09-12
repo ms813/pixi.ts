@@ -85,7 +85,7 @@ export class HandView extends Container {
         border.mouseover = (e: InteractionData) => console.log(`Moused over draw container`);
 
         //@ts-ignore
-        border.click = (e: InteractionData) => this.swapScene('draw-container', this.player.drawPile);
+        border.click = (e: InteractionData) => this.showDeckView('draw-container', this.player.drawPile);
         container.addChild(border);
 
         return container;
@@ -106,7 +106,7 @@ export class HandView extends Container {
         border.hitArea = new Rectangle(0, 0, CardView.width, CardView.height);
 
         //@ts-ignore
-        border.click = (e: InteractionData) => this.swapScene('discard-container', this.player.discardPile);
+        border.click = (e: InteractionData) => this.showDeckView('discard-container', this.player.discardPile);
 
         container.addChild(border);
 
@@ -152,7 +152,7 @@ export class HandView extends Container {
         return countText;
     }
 
-    private swapScene(id: string, deck: Deck): void {
+    private showDeckView(id: string, deck: Deck): void {
         SceneManager.addScene(new DeckScene(id, deck), {overwrite: true});
         SceneManager.goToScene(id);
     }
