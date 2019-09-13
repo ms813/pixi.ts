@@ -45,7 +45,7 @@ export class LevelMap extends Container {
 
         this.interactive = true;
         this.buttonMode = true;
-        this.hitArea = new Rectangle(0, 0, Game.width, Game.height * 0.75);
+        this.hitArea = new Rectangle(0, 0, this.pixelWidth, this.pixelHeight);
 
         this.on('mousedown', this.onDragStart)
         .on('mouseup', this.onDragEnd)
@@ -123,13 +123,13 @@ export class LevelMap extends Container {
         const isWithinDetectionRange = Utils.isWithinSquare(ax, ay, px, py, this.player.detectionRadius);
 
         if (isWithinDetectionRange) {
-            actor.visible = true;;
+            actor.visible = true;
             return true;
         }
 
         if (tile.isVisible && !actor.visible) {
-            console.log(tile.isVisible)
-            actor.visible = true
+            console.log(tile.isVisible);
+            actor.visible = true;
             return true;
         } else if (!tile.isVisible && actor.visible) {
             actor.visible = false;
@@ -271,17 +271,18 @@ export class LevelMap extends Container {
         return this;
     }
 
-    private screenCenter = (): Point => new Point(
-        (window.innerWidth < this.pixelWidth ? window.innerWidth : this.pixelWidth) / 2,
-        (window.innerHeight < this.pixelHeight ? window.innerHeight : this.pixelHeight) / 2
-    );
+    private screenCenter = (): Point => new Point(window.innerWidth / 2, window.innerHeight / 2);
 
+    private viewportCenter = (): Point => new Point(Game.width / 2, Game.height / 2);
 
     public centerOn(x: number, y: number): { x: number, y: number } {
-        const {x: cx, y: cy} = this.screenCenter();
+        const {x: cx, y: cy} = this.viewportCenter();
 
         const dx = (cx - x * TILE_SIZE);
         const dy = (cy - y * TILE_SIZE);
+        // this.x = dx;
+        // this.y = dy;
+        // return {x: dx, y: dy};
         return this.snapToDragLimit(dx, dy);
     }
 
@@ -308,7 +309,7 @@ export class LevelMap extends Container {
     }
 
     private snapToDragLimit(x: number, y: number): Point {
-        const {x: cx, y: cy} = this.screenCenter();
+        const {x: cx, y: cy} = this.viewportCenter();
         if (x > cx / 2) {
             x = cx / 2;
         }
