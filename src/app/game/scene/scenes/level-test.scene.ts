@@ -11,8 +11,8 @@ import {CardDictionary} from '@app/game/card/dictionary/card-dictionary';
 import {Utils} from '@app/utils';
 import {Scene} from '@app/game/scene/scene';
 import {TileType} from '@app/game/map/tile';
-import Ticker = PIXI.ticker.Ticker;
-import Container = PIXI.Container;
+import {Container, ticker} from 'pixi.js';
+import Ticker = ticker.Ticker;
 
 export class LevelTestScene extends Scene {
 
@@ -22,7 +22,7 @@ export class LevelTestScene extends Scene {
     constructor(id: string) {
         super(id, new Container(), new Ticker());
 
-        this.map = new LevelMapGenerator(32, 17)
+        this.map = new LevelMapGenerator(50, 50)
         .grid(0xcccccc)
         .randomWalls(0.3)
         .build();

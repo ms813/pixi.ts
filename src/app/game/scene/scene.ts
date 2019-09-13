@@ -1,6 +1,5 @@
-import Container = PIXI.Container;
-import Ticker = PIXI.ticker.Ticker;
-import DisplayObject = PIXI.DisplayObject;
+import {Container, DisplayObject, ticker} from 'pixi.js';
+import Ticker = ticker.Ticker;
 import {Key} from '../keyboard.event';
 import {SceneManager} from '@app/game/scene/scene-manager';
 

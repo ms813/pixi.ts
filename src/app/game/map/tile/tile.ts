@@ -1,6 +1,4 @@
-import Sprite = PIXI.Sprite;
-import Texture = PIXI.Texture;
-import loader = PIXI.loader;
+import {Sprite, Texture, loader} from 'pixi.js';
 import {TileType} from '@app/game/map/tile/tile-type';
 import {TILE_SIZE} from '@app/game/game';
 import {Movable} from '@app/game/actor';

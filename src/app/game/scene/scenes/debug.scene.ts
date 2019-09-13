@@ -1,7 +1,7 @@
 import {Scene} from '../scene';
 import {Button} from '../../ui/button';
-import Ticker = PIXI.ticker.Ticker;
-import Container = PIXI.Container;
+import {ticker, Container} from 'pixi.js'
+import Ticker = ticker.Ticker;
 
 export class DebugScene extends Scene {
 

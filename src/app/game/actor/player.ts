@@ -3,9 +3,7 @@ import {Movable} from '@app/game/actor/movable';
 import {Card} from '@app/game/card/card';
 import {Game} from '@app/game/game';
 import {Direction} from '@app/game/direction.enum';
-import Sprite = PIXI.Sprite;
-import loader = PIXI.loader;
-import Point = PIXI.Point;
+import {Sprite, loader, Point} from 'pixi.js';
 
 export class Player extends Movable {
     private _drawPile: Deck;

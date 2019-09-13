@@ -1,7 +1,7 @@
 import {Scene} from '@app/game/scene/scene';
 import {LevelMapGenerator} from '@app/game/map/level-map.generator';
-import Container = PIXI.Container;
-import Ticker = PIXI.ticker.Ticker;
+import {Container, ticker} from 'pixi.js';
+import Ticker = ticker.Ticker;
 
 export class MapGenScene extends Scene {
     constructor(id: string) {

@@ -1,9 +1,5 @@
-import Container = PIXI.Container;
-import Sprite = PIXI.Sprite;
-import Text = PIXI.Text;
-import TextStyleOptions = PIXI.TextStyleOptions;
-import loader = PIXI.loader;
-import Resource = PIXI.loaders.Resource;
+import {Container, loader, loaders, Sprite, Text, TextStyleOptions} from 'pixi.js';
+import Resource = loaders.Resource;
 
 export class Button extends Container {
 

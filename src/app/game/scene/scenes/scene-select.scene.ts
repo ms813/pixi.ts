@@ -1,8 +1,8 @@
 import {Scene} from '@app/game/scene/scene';
 import {SceneManager} from '@app/game/scene/scene-manager';
 import {Button} from '@app/game/ui/button';
-import Container = PIXI.Container;
-import Ticker = PIXI.ticker.Ticker;
+import {Container, ticker} from 'pixi.js';
+import Ticker = ticker.Ticker;
 
 export class SceneSelectScene extends Scene {
     constructor(id: string) {

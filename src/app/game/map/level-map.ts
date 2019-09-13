@@ -5,14 +5,10 @@ import {Enemy, Movable, Player} from '@app/game/actor';
 import {DragEndData} from '@app/game/card';
 import {Game, TILE_SIZE} from '@app/game/game';
 import {Direction} from '@app/game/direction.enum';
-import Container = PIXI.Container;
-import loader = PIXI.loader;
-import Resource = PIXI.loaders.Resource;
-import Sprite = PIXI.Sprite;
-import InteractionData = PIXI.interaction.InteractionData;
-import InteractionEvent = PIXI.interaction.InteractionEvent;
-import Rectangle = PIXI.Rectangle;
-import Point = PIXI.Point;
+import {Container, Point, interaction, loaders, Sprite, Rectangle, loader} from 'pixi.js';
+import InteractionData = interaction.InteractionData;
+import InteractionEvent = interaction.InteractionEvent;
+import Resource = loaders.Resource;
 
 export class LevelMap extends Container {
 

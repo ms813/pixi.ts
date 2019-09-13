@@ -1,4 +1,4 @@
-import Point = PIXI.Point;
+import {Point} from 'pixi.js'
 
 export class Utils {
     public static randomInt(min: number, max: number): number {
@@ -36,17 +36,17 @@ export class Utils {
         }
     }
 
-    public static isWithinSquare(x1: number, y1: number, x2: number, y2: number, r: number): boolean {
-        if (r <= 0) {
-            console.debug('Utils::isWithinSquare - radius is 0, returning false');
+    public static isWithinSquare(x: number, y: number, centerX: number, centerY: number, r: number): boolean {
+        if (r < 0) {
+            console.debug('Utils::isWithinSquare - radius is negative, returning false');
             return false;
         }
 
-        const isWithinRange = x1 <= x2 + r
-            && x1 >= x2 - r
-            && y1 <= y2 + r
-            && y1 >= y2 - r;
-        console.debug(`Utils::isWithinSquare - p1 = (${x1}, ${y1}), p2 = (${x2}, ${y2}), r = ${r}, isWithinRange = ${isWithinRange}`);
+        const isWithinRange = x <= centerX + r
+            && x >= centerX - r
+            && y <= centerY + r
+            && y >= centerY - r;
+        console.debug(`Utils::isWithinSquare - p1 = (${x}, ${y}), p2 = (${centerX}, ${centerY}), r = ${r}, isWithinRange = ${isWithinRange}`);
         return isWithinRange;
     }
 }

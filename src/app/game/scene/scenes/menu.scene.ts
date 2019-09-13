@@ -1,9 +1,8 @@
 import {Scene} from '../scene';
 import {Key} from '../../keyboard.event';
-import {SceneManager} from '../scene-manager';
-import Ticker = PIXI.ticker.Ticker;
-import Container = PIXI.Container;
-import Graphics = PIXI.Graphics;
+import {SceneManager} from '@app/game/scene';
+import {Container, Graphics, ticker} from 'pixi.js';
+import Ticker = ticker.Ticker;
 
 export class TickerTestScene extends Scene {
 

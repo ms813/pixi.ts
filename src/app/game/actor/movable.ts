@@ -1,7 +1,7 @@
 import {Direction} from '@app/game/direction.enum';
 import {TILE_SIZE} from '@app/game/game';
 import {HealthBar} from '@app/game/actor/health-bar';
-import Sprite = PIXI.Sprite;
+import {Sprite} from 'pixi.js';
 
 export abstract class Movable {
 

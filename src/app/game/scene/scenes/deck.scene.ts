@@ -1,13 +1,12 @@
-import {Deck} from '../../deck/deck';
-import {CardView} from '../../card/card.view';
-import {Card} from '../../card/card';
+import {Deck} from '@app/game/deck';
+import {Card, CardView} from '@app/game/card';
 import {Scene} from '../scene';
 import {Key} from '../../keyboard.event';
-import {SceneManager} from '../scene-manager';
+import {SceneManager} from '@app/game/scene';
 import {Button} from '@app/game/ui/button';
 import {Game} from '@app/game/game';
-import Container = PIXI.Container;
-import Ticker = PIXI.ticker.Ticker;
+import {Container, ticker} from 'pixi.js';
+import Ticker = ticker.Ticker;
 
 export class DeckScene extends Scene {
 
@@ -29,7 +28,7 @@ export class DeckScene extends Scene {
             SceneManager.goToPreviousScene
         );
 
-        this.addChild(button)
+        this.addChild(button);
     }
 
     private getKeybindings(): Key[] {

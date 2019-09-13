@@ -1,10 +1,3 @@
-import Container = PIXI.Container;
-import DisplayObject = PIXI.DisplayObject;
-import Text = PIXI.Text;
-import TextStyleOptions = PIXI.TextStyleOptions;
-import Graphics = PIXI.Graphics;
-import Rectangle = PIXI.Rectangle;
-import InteractionData = PIXI.interaction.InteractionData;
 import {Player} from '@app/game/actor/player';
 import {CardView} from '@app/game/card/card.view';
 import {Game} from '@app/game/game';
@@ -12,6 +5,7 @@ import {Card} from '@app/game/card/card';
 import {SceneManager} from '@app/game/scene/scene-manager';
 import {DeckScene} from '@app/game/scene/scenes/deck.scene';
 import {Deck} from '@app/game/deck/deck';
+import {Container, TextStyleOptions, Graphics, Rectangle, Text, DisplayObject} from 'pixi.js';
 
 export class HandView extends Container {
 
@@ -32,6 +26,7 @@ export class HandView extends Container {
 
     constructor(player: Player) {
         super();
+        this.initBackground();
         this.player = player;
         this.maxHandContainerCards = this.player.maxHandSize;
         this.handContainer = this.initHandContainer();
@@ -47,6 +42,15 @@ export class HandView extends Container {
 
         this.refreshDrawCountString();
         this.refreshDiscardCountString();
+    }
+
+    private initBackground(): Graphics {
+        const bg = new Graphics();
+        bg.beginFill(0xababab);
+        bg.lineStyle(1, 0x000000);
+        bg.drawRect(0, -this.spacing, Game.width, CardView.height + this.spacing * 2);
+        this.addChild(bg);
+        return bg;
     }
 
     private initHandContainer(): Container {

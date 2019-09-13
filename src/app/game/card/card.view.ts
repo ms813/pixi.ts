@@ -1,10 +1,4 @@
-import Container = PIXI.Container;
-import Text = PIXI.Text;
-import TextStyleOptions = PIXI.TextStyleOptions;
-import Graphics = PIXI.Graphics;
-import Rectangle = PIXI.Rectangle;
-import InteractionData = PIXI.interaction.InteractionData;
-import InteractionEvent = PIXI.interaction.InteractionEvent;
+import {Container, Graphics, interaction, Rectangle, Text, TextStyleOptions} from 'pixi.js';
 import {LevelMap} from '@app/game/map';
 import {Card} from '@app/game/card/card';
 import {DragEndData} from '@app/game/card/drag-end.data';
@@ -12,7 +6,8 @@ import {Tile} from '@app/game/map/tile';
 import {Movable} from '@app/game/actor';
 import {TargetingType} from '@app/game/card/targeting-type';
 import {Utils} from '@app/utils';
-
+import InteractionData = interaction.InteractionData;
+import InteractionEvent = interaction.InteractionEvent;
 
 export class CardView extends Container {
 

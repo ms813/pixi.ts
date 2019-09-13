@@ -2,11 +2,8 @@ import {LevelMap} from './level-map';
 import {Tile} from '@app/game/map/tile/tile';
 import {TILE_SIZE} from '@app/game/game';
 import {TileType} from '@app/game/map/tile/tile-type';
-import Resource = PIXI.loaders.Resource;
-import loader = PIXI.loader;
-import Container = PIXI.Container;
-import Graphics = PIXI.Graphics;
-import Texture = PIXI.Texture;
+import {Container, Graphics, loader, loaders, Texture} from 'pixi.js';
+import Resource = loaders.Resource;
 
 export class LevelMapGenerator {
 
@@ -97,6 +94,6 @@ export class LevelMapGenerator {
     }
 
     public build(): LevelMap {
-       return this.map;
+        return this.map;
     }
 }

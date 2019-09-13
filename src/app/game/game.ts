@@ -1,6 +1,4 @@
-import {Application, loader} from 'pixi.js';
-
-import Container = PIXI.Container;
+import {Application, Container, loader} from 'pixi.js';
 import {TurnClock} from '@app/game/turnclock';
 import {Scene, SceneManager} from '@app/game/scene';
 import {
@@ -12,11 +10,14 @@ import {
     TickerTestScene
 } from '@app/game/scene/scenes';
 import {Card} from '@app/game/card';
-import {Deck} from '@app/game/deck';
+import {Deck} from  '@app/game/deck';
 
 export const TILE_SIZE: number = 32;
 
 export class Game {
+
+    public static height = 930;
+    public static width = 952;
 
     private app: Application;
     static turnClock: TurnClock = new TurnClock();
@@ -75,13 +76,5 @@ export class Game {
         loader.add('button', 'assets/ui/button.json');
         loader.add('map_tiles', '/assets/map/map_tiles.json');
         loader.add('player', '/assets/player.png');
-    }
-
-    public static get width(): number {
-        return 1080;
-    }
-
-    public static get height(): number {
-        return 720;
     }
 }

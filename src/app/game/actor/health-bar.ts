@@ -1,6 +1,5 @@
-import Container = PIXI.Container;
-import Graphics = PIXI.Graphics;
 import {TILE_SIZE} from '@app/game/game';
+import {Container, Graphics} from 'pixi.js';
 
 export class HealthBar extends Container {
 

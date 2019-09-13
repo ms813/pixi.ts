@@ -1,4 +1,4 @@
-import Application = PIXI.Application;
+import {Application} from 'pixi.js';
 import {Scene} from '@app/game/scene/scene';
 
 export class SceneManager {
