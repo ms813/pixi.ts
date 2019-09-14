@@ -1,7 +1,8 @@
 import {Container, DisplayObject, ticker} from 'pixi.js';
-import Ticker = ticker.Ticker;
 import {Key} from '../keyboard.event';
 import {SceneManager} from '@app/game/scene/scene-manager';
+import Ticker = ticker.Ticker;
+import autoDetectRenderer = PIXI.autoDetectRenderer;
 
 export abstract class Scene {
 

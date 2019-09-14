@@ -1,5 +1,5 @@
 import {Player} from '@app/game/actor/player';
-import {CardView} from '@app/game/card/card.view';
+import {PlayableCardView} from '@app/game/card/playable-card.view';
 import {Game} from '@app/game/game';
 import {Card} from '@app/game/card/card';
 import {SceneManager} from '@app/game/scene/scene-manager';
@@ -35,7 +35,7 @@ export class HandView extends Container {
         this.discardContainer = this.initDiscardContainer();
         this.draw = this.draw.bind(this);
         this.discard = this.discard.bind(this);
-        this.y = Game.height - CardView.height - this.spacing;
+        this.y = Game.height - PlayableCardView.height - this.spacing;
 
         this.addChild(this.handContainer);
         this.addChild(this.discardContainer);
@@ -49,14 +49,14 @@ export class HandView extends Container {
         const bg = new Graphics();
         bg.beginFill(0xababab);
         bg.lineStyle(1, 0x000000);
-        bg.drawRect(0, -this.spacing, Game.width, CardView.height + this.spacing * 2);
+        bg.drawRect(0, -this.spacing, Game.width, PlayableCardView.height + this.spacing * 2);
         this.addChild(bg);
         return bg;
     }
 
     private initHandContainer(): Container {
         const container = new Container();
-        container.x = CardView.width + 2 * this.spacing;
+        container.x = PlayableCardView.width + 2 * this.spacing;
         return container;
     }
 
@@ -70,9 +70,9 @@ export class HandView extends Container {
 
         const border: Graphics = new Graphics();
         border.lineStyle(1, 0x00ff00);
-        border.drawRect(0, 0, CardView.width, CardView.height);
+        border.drawRect(0, 0, PlayableCardView.width, PlayableCardView.height);
         border.interactive = true;
-        border.hitArea = new Rectangle(0, 0, CardView.width, CardView.height);
+        border.hitArea = new Rectangle(0, 0, PlayableCardView.width, PlayableCardView.height);
         //@ts-ignore
         border.mouseover = (e: InteractionData) => console.log(`Moused over draw container`);
 
@@ -85,7 +85,7 @@ export class HandView extends Container {
 
     private initDiscardContainer(): Container {
         const container = new Container();
-        container.x = (this.maxHandContainerCards + 1) * (CardView.width + this.spacing) + this.spacing;
+        container.x = (this.maxHandContainerCards + 1) * (PlayableCardView.width + this.spacing) + this.spacing;
 
         const countText = new Text('', this.textStyleOptions);
         countText.name = 'discardCountText';
@@ -93,9 +93,9 @@ export class HandView extends Container {
 
         const border: Graphics = new Graphics();
         border.lineStyle(1, 0xff0000);
-        border.drawRect(0, 0, CardView.width, CardView.height);
+        border.drawRect(0, 0, PlayableCardView.width, PlayableCardView.height);
         border.interactive = true;
-        border.hitArea = new Rectangle(0, 0, CardView.width, CardView.height);
+        border.hitArea = new Rectangle(0, 0, PlayableCardView.width, PlayableCardView.height);
 
         //@ts-ignore
         border.click = (e: InteractionData) => this.showDeckView('discard-container', this.player.discardPile);
@@ -123,7 +123,7 @@ export class HandView extends Container {
         const ticker = SceneManager.currentScene.ticker;
         // add the newly drawn cards at the left of the hand
         card.view.y = 0;
-        card.view.x = -CardView.width - this.spacing;
+        card.view.x = -PlayableCardView.width - this.spacing;
         this.handContainer.addChild(card.view);
 
         const animate = (delta: number) => slideCardRight(card.view, 0, delta, animate);
@@ -131,9 +131,9 @@ export class HandView extends Container {
 
         //slide all the cards along
         this.player.hand.cards.forEach((c: Card) => {
-            const pos: number = c.view.x / (this.spacing + CardView.width);
+            const pos: number = c.view.x / (this.spacing + PlayableCardView.width);
             if (this.player.hand.cards.length > pos) {
-                const endX = c.view.x + CardView.width + this.spacing;
+                const endX = c.view.x + PlayableCardView.width + this.spacing;
                 const animate = (delta: number) => slideCardRight(c.view, endX, delta, animate);
                 ticker.add(animate);
             }
@@ -142,7 +142,7 @@ export class HandView extends Container {
 
     discard(...cards: Card[]) {
         console.debug(`HandView::discard`, ...cards.map(c => c.name));
-        cards.forEach(({view}: { view: CardView }) => {
+        cards.forEach(({view}: { view: PlayableCardView }) => {
             const animate = (delta: number) => slideToDiscard(view, delta, animate);
             SceneManager.currentScene.ticker.add(animate);
         });

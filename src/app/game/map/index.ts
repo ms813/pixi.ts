@@ -1,3 +1,3 @@
-export * from './level-map.generator'
+export * from './generator/simple-map.generator'
 export * from './level-map'
 

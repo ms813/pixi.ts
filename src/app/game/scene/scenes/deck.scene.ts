@@ -1,11 +1,12 @@
 import {Deck} from '@app/game/deck';
-import {Card, CardView} from '@app/game/card';
+import {Card, PlayableCardView} from '@app/game/card';
 import {Scene} from '../scene';
 import {Key} from '../../keyboard.event';
 import {SceneManager} from '@app/game/scene';
 import {Button} from '@app/game/ui/button';
 import {Game} from '@app/game/game';
 import {Container, ticker} from 'pixi.js';
+import {CardView} from '@app/game/card/card.view';
 import Ticker = ticker.Ticker;
 
 export class DeckScene extends Scene {
@@ -18,7 +19,7 @@ export class DeckScene extends Scene {
     ) {
         super(id, new Container(), new Ticker());
         this.keys = this.getKeybindings();
-        this.cardViews = deck.cards.map((card: Card, i: number) => new CardView(card, i * CardView.width, CardView.height));
+        this.cardViews = deck.cards.map((card: Card, i: number) => new CardView(card, i * PlayableCardView.width, PlayableCardView.height));
         this.cardViews.forEach(cardView => this.container.addChild(cardView));
 
         const button: Button = new Button(

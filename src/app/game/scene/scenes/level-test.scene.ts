@@ -1,5 +1,5 @@
 import {LevelMap} from '@app/game/map/level-map';
-import {LevelMapGenerator} from '@app/game/map/level-map.generator';
+import {SimpleMapGenerator} from '@app/game/map/generator/simple-map.generator';
 import {Key} from '@app/game/keyboard.event';
 import {Player} from '@app/game/actor/player';
 import {Deck} from '@app/game/deck/deck';
@@ -22,9 +22,10 @@ export class LevelTestScene extends Scene {
     constructor(id: string) {
         super(id, new Container(), new Ticker());
 
-        this.map = new LevelMapGenerator(50, 50)
+        this.map = new SimpleMapGenerator(50, 50)
         .grid(0xcccccc)
         .randomWalls(0.3)
+        .discovered(true)
         .build();
 
         console.debug('map:', this.map);

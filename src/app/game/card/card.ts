@@ -1,4 +1,4 @@
-import {CardView} from '@app/game/card/card.view';
+import {PlayableCardView} from '@app/game/card/playable-card.view';
 import {TargetingType} from '@app/game/card/targeting-type';
 import {CardDefinition} from '@app/game/card/dictionary/card-dictionary';
 import {DragEndData} from '@app/game/card/drag-end.data';
@@ -6,7 +6,7 @@ import {DragEndData} from '@app/game/card/drag-end.data';
 export class Card {
 
     public readonly name: string;
-    public readonly view: CardView;
+    public readonly view: PlayableCardView;
     public readonly targeting: TargetingType;
     public readonly range: number;
     public readonly speed: number;
@@ -20,7 +20,7 @@ export class Card {
         this.name = defn.name;
         this.displayName = defn.displayName;
         this.targeting = TargetingType[defn.targeting as keyof typeof TargetingType];
-        this.view = new CardView(this);
+        this.view = new PlayableCardView(this);
         this.range = defn.range;
         this.speed = defn.speed;
     }

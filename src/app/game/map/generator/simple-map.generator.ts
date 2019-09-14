@@ -1,11 +1,12 @@
-import {LevelMap} from './level-map';
-import {Tile} from '@app/game/map/tile/tile';
-import {TILE_SIZE} from '@app/game/game';
-import {TileType} from '@app/game/map/tile/tile-type';
+import {LevelMap} from '../level-map';
+import {Tile} from '../tile/tile';
+import {TILE_SIZE} from '../../game';
+import {TileType} from '../tile/tile-type';
 import {Container, Graphics, loader, loaders, Texture} from 'pixi.js';
+import {LevelMapGenerator} from '@app/game/map/generator/level-map.generator';
 import Resource = loaders.Resource;
 
-export class LevelMapGenerator {
+export class SimpleMapGenerator implements LevelMapGenerator {
 
     private readonly map: LevelMap;
     private readonly resources: Resource;
@@ -16,7 +17,7 @@ export class LevelMapGenerator {
         this.map = this.init(new LevelMap(width, height));
     }
 
-    public grid(lineColor: number): LevelMapGenerator {
+    public grid(lineColor: number): SimpleMapGenerator {
         const {width, height} = this.map;
         const addVerticalLine = (x: number): Graphics => {
             const g = new Graphics();
@@ -49,6 +50,15 @@ export class LevelMapGenerator {
         return this;
     }
 
+    public fog(fog: boolean): SimpleMapGenerator {
+        this.map.fog = fog;
+        return this;
+    }
+
+    public discovered(discovered: boolean): SimpleMapGenerator {
+        this.map.tiles.forEach(t => t.isDiscovered = discovered);
+        return this;
+    }
 
     private init(map: LevelMap): LevelMap {
         const {width, height} = map;
@@ -74,7 +84,7 @@ export class LevelMapGenerator {
         return map;
     }
 
-    randomWalls(density: number): LevelMapGenerator {
+    randomWalls(density: number): SimpleMapGenerator {
         const {width, height, tiles} = this.map;
         if (density < 0 || density > 1) {
             console.error(`LevelMapGenerator::randomWalls density out of bounds, expected a value between 0 and 1 inclusive, instead got ${density}`);
@@ -89,7 +99,6 @@ export class LevelMapGenerator {
                 }
             }
         }
-
         return this;
     }
 

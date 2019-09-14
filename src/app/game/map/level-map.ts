@@ -5,13 +5,12 @@ import {Enemy, Movable, Player} from '@app/game/actor';
 import {DragEndData} from '@app/game/card';
 import {Game, TILE_SIZE} from '@app/game/game';
 import {Direction} from '@app/game/direction.enum';
-import {Container, Point, interaction, loaders, Sprite, Rectangle, loader} from 'pixi.js';
+import {Container, interaction, loader, loaders, Point, Rectangle, Sprite} from 'pixi.js';
 import InteractionData = interaction.InteractionData;
 import InteractionEvent = interaction.InteractionEvent;
 import Resource = loaders.Resource;
 
 export class LevelMap extends Container {
-
     private _isGridVisible: boolean = true;
     private _tiles: Tile[] = [];
     private _width: number;
@@ -27,6 +26,8 @@ export class LevelMap extends Container {
     private dragging: boolean = false;
     private dragStart: Point;
     private dragData: InteractionData;
+
+    private _fog: boolean = true;
 
     constructor(width: number, height: number) {
         super();
@@ -100,8 +101,10 @@ export class LevelMap extends Container {
             this.rangeIndicator.x = x * TILE_SIZE;
             this.rangeIndicator.y = y * TILE_SIZE;
             this.centerOn(x, y);
-            for (let i = 0; i < 8; i++) {
-                this.refreshOctant(x, y, i);
+            if (this.fog) {
+                for (let i = 0; i < 8; i++) {
+                    this.refreshOctant(x, y, i);
+                }
             }
         }
 
@@ -109,6 +112,7 @@ export class LevelMap extends Container {
             const {x, y} = e;
             const tile = this.tiles[this.coordsToIndex(x, y)];
             tile.passable = false;
+
             this.setActorVisibility(e, tile);
         });
     }
@@ -395,5 +399,15 @@ export class LevelMap extends Container {
         const topLeft = col / (row + 2);
         const bottomRight = (col + 1) / (row + 1);
         return new Shadow(topLeft, bottomRight);
+    }
+
+    get fog(): boolean {
+        return this._fog;
+    }
+
+    set fog(value: boolean) {
+        this.tiles.forEach(t => t.isVisible = !value);
+        this.update();
+        this._fog = value;
     }
 }

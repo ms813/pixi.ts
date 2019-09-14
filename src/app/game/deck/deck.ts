@@ -1,5 +1,5 @@
 import {Card} from '../card/card';
-import {CardView} from '@app/game/card/card.view';
+import {PlayableCardView} from '@app/game/card/playable-card.view';
 import {Utils} from '@app/utils';
 
 export class Deck {
@@ -25,8 +25,8 @@ export class Deck {
         return this;
     }
 
-    public getCardViews(): CardView[] {
-        return this.cards.map((c: Card) => new CardView(c));
+    public getCardViews(): PlayableCardView[] {
+        return this.cards.map((c: Card) => new PlayableCardView(c));
     }
 
     public shift(n: number = 1): Card[] {
