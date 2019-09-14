@@ -39,7 +39,7 @@ export class CardView extends Container {
 
         const border: Graphics = new Graphics();
         console.debug(`CardView::new - ${card.name}: (${x}, ${y})`);
-        border.lineStyle(1, 0x000000);
+        border.lineStyle(1, 0x00ffff);
         border.drawRect(0, 0, CardView.width, CardView.height);
         border.interactive = true;
         border.hitArea = new Rectangle(0, 0, CardView.width, CardView.height);

@@ -124,7 +124,6 @@ export class LevelMap extends Container {
         }
 
         if (tile.isVisible && !actor.visible) {
-            console.log(tile.isVisible);
             actor.visible = true;
             return true;
         } else if (!tile.isVisible && actor.visible) {

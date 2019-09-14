@@ -142,8 +142,27 @@ export class HandView extends Container {
 
     discard(...cards: Card[]) {
         console.debug(`HandView::discard`, ...cards.map(c => c.name));
-        cards.forEach(({view}: { view: CardView }) => this.handContainer.removeChild(view));
-        this.refreshDiscardCountString();
+        cards.forEach(({view}: { view: CardView }) => {
+            const animate = (delta: number) => slideToDiscard(view, delta, animate);
+            SceneManager.currentScene.ticker.add(animate);
+        });
+
+        const slideToDiscard = (c: DisplayObject, delta: number, self: (...any: any[]) => any) => {
+            const speedPerFrame = 25;
+            const {x, y} = c.getGlobalPosition();
+            const {x: dx, y: dy} = this.discardContainer.getGlobalPosition();
+            if (dx - x < 1 && dy - y < 1) {
+                SceneManager.currentScene.ticker.remove(self);
+                c.x = dx;
+                c.y = dy;
+                this.handContainer.removeChild(c);
+                this.refreshDiscardCountString();
+                return;
+            }
+
+            c.x += (dx - x) / (speedPerFrame * delta);
+            c.y += (dy - y) / (speedPerFrame * delta);
+        };
     }
 
     private refreshDiscardCountString(): Text {
