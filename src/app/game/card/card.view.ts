@@ -45,7 +45,7 @@ export class CardView extends Container {
         border.hitArea = new Rectangle(0, 0, CardView.width, CardView.height);
         border.on('mouseover', (e: InteractionData) => this.showRange(this.card.range));
         border.on('mouseout', () => this.hideRange());
-        this.card.onDiscard.unshift(() => this.hideRange());
+        this.card.onDiscard.unshift(this.hideRange);
 
         this.initDrag(border);
         this.nameText = new Text(card.displayName, this.textStyleOptions);

@@ -1,5 +1,6 @@
 import {Game} from '@app/game/game';
 import {Application} from 'pixi.js';
+import 'main.css';
 
 export const game = new Game();
 

@@ -5,7 +5,8 @@ import {Card} from '@app/game/card/card';
 import {SceneManager} from '@app/game/scene/scene-manager';
 import {DeckScene} from '@app/game/scene/scenes/deck.scene';
 import {Deck} from '@app/game/deck/deck';
-import {Container, TextStyleOptions, Graphics, Rectangle, Text, DisplayObject} from 'pixi.js';
+import {Container, DisplayObject, Graphics, interaction, Rectangle, Text, TextStyleOptions} from 'pixi.js';
+import InteractionData = interaction.InteractionData;
 
 export class HandView extends Container {
 
@@ -56,19 +57,6 @@ export class HandView extends Container {
     private initHandContainer(): Container {
         const container = new Container();
         container.x = CardView.width + 2 * this.spacing;
-
-        const border: Graphics = new Graphics();
-        border.lineStyle(1, 0x0000ff);
-        border.drawRect(
-            -(this.spacing / 2),
-            -(this.spacing / 2),
-            this.maxHandContainerCards * (CardView.width + this.spacing),
-            CardView.height + this.spacing
-        );
-        border.name = 'handBorder';
-        //@ts-ignore
-
-        container.addChild(border);
         return container;
     }
 
@@ -117,25 +105,39 @@ export class HandView extends Container {
         return container;
     }
 
-    draw(...cards: Card[]) {
-        console.debug(`HandView::draw`, ...cards);
-
-        const border = this.handContainer.getChildByName('handBorder');
-        border.x -= CardView.width + this.spacing;
+    draw(card: Card) {
+        console.debug(`HandView::draw`, card);
 
         this.refreshDrawCountString();
-
+        const cardMoveSpeedPerFrame = 5;
         // move all the other cards along one
-        this.handContainer.children.forEach((c: DisplayObject) =>
-            c.x += cards.length * (CardView.width + this.spacing)
-        );
+        const slideCardRight = (c: DisplayObject, endX: number, delta: number, self: (...args: any[]) => any) => {
+            if (c.x >= endX) {
+                SceneManager.currentScene.ticker.remove(self);
+                c.x = endX;
+                return;
+            }
+            c.x += cardMoveSpeedPerFrame * delta;
+        };
 
+        const ticker = SceneManager.currentScene.ticker;
         // add the newly drawn cards at the left of the hand
-        cards.forEach((card: Card, i: number) => {
-            card.view.y = 0;
-            card.view.x = i * (CardView.width + this.spacing);
+        card.view.y = 0;
+        card.view.x = -CardView.width - this.spacing;
+        this.handContainer.addChild(card.view);
+
+        const animate = (delta: number) => slideCardRight(card.view, 0, delta, animate);
+        ticker.add(animate);
+
+        //slide all the cards along
+        this.player.hand.cards.forEach((c: Card) => {
+            const pos: number = c.view.x / (this.spacing + CardView.width);
+            if (this.player.hand.cards.length > pos) {
+                const endX = c.view.x + CardView.width + this.spacing;
+                const animate = (delta: number) => slideCardRight(c.view, endX, delta, animate);
+                ticker.add(animate);
+            }
         });
-        this.handContainer.addChild(...cards.map(c => c.view));
     }
 
     discard(...cards: Card[]) {

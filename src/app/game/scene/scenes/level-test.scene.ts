@@ -71,10 +71,11 @@ export class LevelTestScene extends Scene {
             e.onDeath = [this.map.removeEnemy];
         }
 
-        // put some cards in the players hand to start
-        while (this.player.hand.length < 3) {
+        const x = setInterval(() => {
+            // put some cards in the players hand to start
             this.player.draw();
-        }
+            if (this.player.hand.length >= 3) clearInterval(x);
+        }, 500);
 
         this.keys = this.getKeybindings();
         this.map.update();
