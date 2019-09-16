@@ -1,4 +1,4 @@
-import {Sprite, Texture, loader} from 'pixi.js';
+import {loader, Sprite, Texture} from 'pixi.js';
 import {TileType} from '@app/game/map/tile/tile-type';
 import {TILE_SIZE} from '@app/game/game';
 import {Movable} from '@app/game/actor';
@@ -17,7 +17,6 @@ export class Tile extends Sprite {
     constructor(
         public readonly mapX: number,
         public readonly mapY: number,
-        texture: Texture,
         type: TileType = TileType.FLOOR
     ) {
         super();
@@ -25,12 +24,10 @@ export class Tile extends Sprite {
             Tile.undiscoveredTexture = loader.resources['map_tiles'].textures['undiscovered.png'];
         }
 
-        this.discoveredTexture = texture;
-
+        this.type = type;
 
         this.x = mapX * TILE_SIZE;
         this.y = mapY * TILE_SIZE;
-        this.type = type;
 
         this.interactive = true;
         this.on('mouseover', () => this.tint = 0x00ffff);
@@ -43,8 +40,21 @@ export class Tile extends Sprite {
 
     public set type(type: TileType) {
         this._type = type;
+        this.discoveredTexture = Tile.getTextureForType(type);
+        this.texture = Tile.getTextureForType(type);
         this.passable = type === TileType.FLOOR;
     }
+
+    private static getTextureForType(type: TileType): Texture {
+        const map: { [key: string]: string } = {
+            [TileType.FLOOR]: 'floor.png',
+            [TileType.WALL]: 'wall.png',
+            [TileType.INDESTRUCTABLE_WALL]: 'indestructable_wall.png'
+        };
+
+        return loader.resources['map_tiles'].textures[map[type]];
+    }
+
 
     public get type(): TileType {
         return this._type;

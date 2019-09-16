@@ -1,4 +1,4 @@
-import {Utils} from '@app/utils';
+import {Utils} from '@app/game/util/utils';
 import {Point} from 'pixi.js';
 
 describe('Utils', () => {

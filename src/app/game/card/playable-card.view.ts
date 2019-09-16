@@ -1,11 +1,11 @@
-import {Graphics, interaction, Rectangle} from 'pixi.js';
+import {Graphics, interaction} from 'pixi.js';
 import {LevelMap} from '@app/game/map';
 import {Card} from '@app/game/card/card';
 import {DragEndData} from '@app/game/card/drag-end.data';
 import {Tile} from '@app/game/map/tile';
 import {Movable} from '@app/game/actor';
 import {TargetingType} from '@app/game/card/targeting-type';
-import {Utils} from '@app/utils';
+import {Utils} from '@app/game/util/utils';
 import {CardView} from '@app/game/card/card.view';
 import InteractionData = interaction.InteractionData;
 import InteractionEvent = interaction.InteractionEvent;
@@ -28,8 +28,6 @@ export class PlayableCardView extends CardView {
         this.onDragEnd = this.onDragEnd.bind(this);
         this.onDragMove = this.onDragMove.bind(this);
 
-        this.border.interactive = true;
-        this.border.hitArea = new Rectangle(0, 0, PlayableCardView.width, PlayableCardView.height);
         this.border.on('mouseover', (e: InteractionData) => this.showRange(this.card.range));
         this.border.on('mouseout', () => this.hideRange());
         this.card.onDiscard.unshift(this.hideRange);

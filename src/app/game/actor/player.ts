@@ -2,7 +2,7 @@ import {Deck} from '../deck/deck';
 import {Movable} from '@app/game/actor/movable';
 import {Card} from '@app/game/card/card';
 import {Game} from '@app/game/game';
-import {Direction} from '@app/game/direction.enum';
+import {Direction} from '@app/game/util/direction.enum';
 import {loader, Point, Sprite} from 'pixi.js';
 
 export class Player extends Movable {
@@ -25,7 +25,7 @@ export class Player extends Movable {
     constructor(deck: Deck) {
         super('player');
         this.deck = deck.shuffle();
-        console.log(this.deck.cards.map(c => c.name));
+        console.debug('Player::new', this.deck.cards.map(c => c.name));
         this.deck.cards.forEach(c => c.onDiscard.push(
             () => this.discard(c)
         ));
@@ -37,7 +37,9 @@ export class Player extends Movable {
 
         this.currentDrawCooldown = this.drawCooldown;
 
-        console.log(this.drawPile, this.hand, this.discardPile);
+        console.debug('Player::new - drawPile', this.drawPile);
+        console.debug('Player::new - hand', this.hand);
+        console.debug('Player::new - discardPile', this.discardPile);
 
         this.sprite = new Sprite(loader.resources['player'].texture);
         this.sprite.tint = 0x000000;

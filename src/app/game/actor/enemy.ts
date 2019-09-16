@@ -1,8 +1,8 @@
 import {Movable} from '@app/game/actor/movable';
 import {Game} from '@app/game/game';
 import {LevelMap} from '@app/game/map/level-map';
-import {Direction} from '@app/game/direction.enum';
-import {Utils} from '@app/utils';
+import {Direction} from '@app/game/util/direction.enum';
+import {Utils} from '@app/game/util/utils';
 import {loader, Sprite} from 'pixi.js';
 
 export class Enemy extends Movable {

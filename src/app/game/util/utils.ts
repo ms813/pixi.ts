@@ -1,4 +1,5 @@
 import {Point} from 'pixi.js'
+import {Direction} from '@app/game/util/direction.enum';
 
 export class Utils {
     public static randomInt(min: number, max: number): number {
@@ -49,4 +50,15 @@ export class Utils {
         console.debug(`Utils::isWithinSquare - p1 = (${x}, ${y}), p2 = (${centerX}, ${centerY}), r = ${r}, isWithinRange = ${isWithinRange}`);
         return isWithinRange;
     }
+
+    public static readonly direction: { [key: string]: Point } = {
+        [Direction.N]: new Point(0, -1),
+        [Direction.NE]: new Point(1, -1),
+        [Direction.E]: new Point(1, 0),
+        [Direction.SE]: new Point(1, 1),
+        [Direction.S]: new Point(0, 1),
+        [Direction.SW]: new Point(-1, 1),
+        [Direction.W]: new Point(-1, 0),
+        [Direction.NW]: new Point(-1, -1)
+    };
 }

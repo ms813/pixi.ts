@@ -1,16 +1,7 @@
-import {Application, Container, loader} from 'pixi.js';
+import {Application, loader} from 'pixi.js';
 import {TurnClock} from '@app/game/turnclock';
-import {Scene, SceneManager} from '@app/game/scene';
-import {
-    DebugScene,
-    DeckScene,
-    LevelTestScene,
-    MapGenScene,
-    SceneSelectScene,
-    TickerTestScene
-} from '@app/game/scene/scenes';
-import {Card} from '@app/game/card';
-import {Deck} from  '@app/game/deck';
+import {SceneManager} from '@app/game/scene';
+import {DebugScene, LevelTestScene, MapGenScene, SceneSelectScene, TickerTestScene} from '@app/game/scene/scenes';
 
 export const TILE_SIZE: number = 32;
 
@@ -27,49 +18,18 @@ export class Game {
 
         Game.loadAssets();
 
-        loader.load(this.setup.bind(this));
+        loader.load(Game.setup.bind(this));
         SceneManager.init(this.app);
     }
 
-    setup(): void {
+    private static setup(): void {
         SceneManager.addScene(new DebugScene('debug'));
         SceneManager.addScene(new TickerTestScene('ticker_test'));
         SceneManager.addScene(new LevelTestScene('level_test'));
         SceneManager.addScene(new MapGenScene('mapgen'));
         SceneManager.addScene(new SceneSelectScene('scene_select'));
 
-        SceneManager.goToScene('level_test');
-    }
-
-    private buildDeckScene(): Scene {
-        const cards: Card[] = [
-            // new Card('A'),
-            // new Card('B'),
-            // new Card('C'),
-            // new Card('D'),
-        ];
-
-        const deck = new Deck(cards);
-        const deckScene = SceneManager.addScene(new DeckScene('test-deck-scene', deck));
-        // append hero
-
-        const testAnimation = new Container();
-
-        deckScene.container.addChild(testAnimation);
-        // SceneManager.goToScene('test-deck-scene');
-        return deckScene;
-    }
-
-    private paused: boolean = false;
-
-    public pause(): boolean {
-        this.paused = !this.paused;
-        if (this.paused) {
-            this.app.ticker.stop();
-        } else {
-            this.app.ticker.start();
-        }
-        return this.paused;
+        SceneManager.goToScene('mapgen');
     }
 
     private static loadAssets() {

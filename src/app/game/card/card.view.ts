@@ -1,4 +1,4 @@
-import {Container, Graphics, interaction, Text, TextStyleOptions} from 'pixi.js';
+import {Container, Graphics, interaction, Rectangle, Text, TextStyleOptions} from 'pixi.js';
 import {Card} from '@app/game/card/card';
 
 export class CardView extends Container {
@@ -19,8 +19,10 @@ export class CardView extends Container {
         this.x = x;
         this.y = y;
 
-
         this.border = this.initBorder();
+        this.border.interactive= true;
+        this.border.hitArea = new Rectangle(0, 0, CardView.width, CardView.height);
+        this.border.on('mouseover',(e)=> console.log(e))
         this.addChild(this.border);
 
         this.nameText = this.initNameText();

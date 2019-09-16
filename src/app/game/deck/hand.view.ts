@@ -74,7 +74,7 @@ export class HandView extends Container {
         border.interactive = true;
         border.hitArea = new Rectangle(0, 0, PlayableCardView.width, PlayableCardView.height);
         //@ts-ignore
-        border.mouseover = (e: InteractionData) => console.log(`Moused over draw container`);
+        border.mouseover = (e: InteractionData) => console.debug(`Moused over draw container`);
 
         //@ts-ignore
         border.click = (e: InteractionData) => this.showDeckView('draw-container', this.player.drawPile);

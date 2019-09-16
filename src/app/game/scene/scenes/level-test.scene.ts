@@ -1,14 +1,14 @@
 import {LevelMap} from '@app/game/map/level-map';
-import {SimpleMapGenerator} from '@app/game/map/generator/simple-map.generator';
+import {SimpleMapGenerator} from '@app/game/map';
 import {Key} from '@app/game/keyboard.event';
 import {Player} from '@app/game/actor/player';
-import {Deck} from '@app/game/deck/deck';
-import {Direction} from '@app/game/direction.enum';
+import {Deck} from '@app/game/deck';
+import {Direction} from '@app/game/util';
 import {HandView} from '@app/game/deck/hand.view';
 import {Enemy} from '@app/game/actor/enemy';
 import {Game} from '@app/game/game';
 import {CardDictionary} from '@app/game/card/dictionary/card-dictionary';
-import {Utils} from '@app/utils';
+import {Utils} from '@app/game/util/utils';
 import {Scene} from '@app/game/scene/scene';
 import {TileType} from '@app/game/map/tile';
 import {Container, ticker} from 'pixi.js';
@@ -25,7 +25,7 @@ export class LevelTestScene extends Scene {
         this.map = new SimpleMapGenerator(50, 50)
         .grid(0xcccccc)
         .randomWalls(0.3)
-        .discovered(true)
+        .discovered(false)
         .build();
 
         console.debug('map:', this.map);

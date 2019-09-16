@@ -1,7 +1,8 @@
-import {Direction} from '@app/game/direction.enum';
+import {Direction} from '@app/game/util/direction.enum';
 import {TILE_SIZE} from '@app/game/game';
 import {HealthBar} from '@app/game/actor/health-bar';
 import {Sprite} from 'pixi.js';
+import {Utils} from '@app/game/util/utils';
 
 export abstract class Movable {
 
@@ -20,35 +21,14 @@ export abstract class Movable {
         this.maxHp = 10;
     }
 
-    public static readonly moveFnMap: { [key: string]: (m: Movable) => void } = {
-        [Direction.N]: (m: Movable) => --m.y,
-        [Direction.NE]: (m: Movable) => {
-            ++m.x;
-            --m.y;
-        },
-        [Direction.E]: (m: Movable) => ++m.x,
-        [Direction.SE]: (m: Movable) => {
-            ++m.x;
-            ++m.y;
-        },
-        [Direction.S]: (m: Movable) => ++m.y,
-        [Direction.SW]: (m: Movable) => {
-            --m.x;
-            ++m.y;
-        },
-        [Direction.W]: (m: Movable) => --m.x,
-        [Direction.NW]: (m: Movable) => {
-            --m.x;
-            --m.y;
-        }
-    };
-
     abstract doTurn(delay?: number): Movable;
 
     move(direction: Direction, isLegalMove: boolean) {
         const prevPos = {x: this.x, y: this.y};
         if (isLegalMove) {
-            Movable.moveFnMap[direction](this);
+            const {x: dx, y: dy} = Utils.direction[direction];
+            this.x += dx;
+            this.y += dy;
         }
         const movePos = {x: this.x, y: this.y};
         this.onMove.forEach(fn => fn(prevPos, movePos));

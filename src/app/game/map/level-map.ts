@@ -1,10 +1,10 @@
-import {Utils} from '@app/utils';
+import {Utils} from '@app/game/util/utils';
 import {Shadow, ShadowLine} from '@app/game/map/shadow';
 import {Tile, TileType} from '@app/game/map/tile';
 import {Enemy, Movable, Player} from '@app/game/actor';
 import {DragEndData} from '@app/game/card';
 import {Game, TILE_SIZE} from '@app/game/game';
-import {Direction} from '@app/game/direction.enum';
+import {Direction} from '@app/game/util/direction.enum';
 import {Container, interaction, loader, loaders, Point, Rectangle, Sprite} from 'pixi.js';
 import InteractionData = interaction.InteractionData;
 import InteractionEvent = interaction.InteractionEvent;
@@ -244,29 +244,9 @@ export class LevelMap extends Container {
     }
 
     public scroll(direction: Direction): LevelMap {
-        const moveFnMap: { [key: string]: (c: Container) => void } = {
-            [Direction.N]: (c: Container) => c.y -= TILE_SIZE,
-            [Direction.NE]: (c: Container) => {
-                c.x += TILE_SIZE;
-                c.y -= TILE_SIZE;
-            },
-            [Direction.E]: (c: Container) => c.x += TILE_SIZE,
-            [Direction.SE]: (c: Container) => {
-                c.x += TILE_SIZE;
-                c.y += TILE_SIZE;
-            },
-            [Direction.S]: (c: Container) => c.y += TILE_SIZE,
-            [Direction.SW]: (c: Container) => {
-                c.x -= TILE_SIZE;
-                c.y += TILE_SIZE;
-            },
-            [Direction.W]: (c: Container) => c.x -= TILE_SIZE,
-            [Direction.NW]: (c: Container) => {
-                c.x -= TILE_SIZE;
-                c.y -= TILE_SIZE;
-            }
-        };
-        moveFnMap[direction](this);
+        let {x: dx, y: dy} = Utils.direction[direction];
+        this.x += dx * TILE_SIZE;
+        this.y += dy * TILE_SIZE;
         return this;
     }
 

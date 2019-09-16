@@ -1,6 +1,6 @@
 import {Card} from '../card/card';
 import {PlayableCardView} from '@app/game/card/playable-card.view';
-import {Utils} from '@app/utils';
+import {Utils} from '@app/game/util/utils';
 
 export class Deck {
 
