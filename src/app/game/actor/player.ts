@@ -2,7 +2,6 @@ import {Deck} from '../deck/deck';
 import {Movable} from '@app/game/actor/movable';
 import {Card} from '@app/game/card/card';
 import {Game} from '@app/game/game';
-import {Direction} from '@app/game/util/direction.enum';
 import {loader, Point, Sprite} from 'pixi.js';
 
 export class Player extends Movable {
@@ -95,12 +94,10 @@ export class Player extends Movable {
         return cards;
     }
 
-    move(direction: Direction, isLegalMove: boolean): { x: number, y: number } {
+    move(direction: Point, isLegalMove: boolean): { x: number, y: number } {
         const prevPos = {x: this.x, y: this.y};
         if (isLegalMove) {
             const movePos = super.move(direction, isLegalMove);
-
-
             this.doTurn(this.moveSpeed);
             return movePos;
         } else {

@@ -1,5 +1,4 @@
-import {Point} from 'pixi.js'
-import {Direction} from '@app/game/util/direction.enum';
+import {Point} from 'pixi.js';
 
 export class Utils {
     public static randomInt(min: number, max: number): number {
@@ -51,14 +50,7 @@ export class Utils {
         return isWithinRange;
     }
 
-    public static readonly direction: { [key: string]: Point } = {
-        [Direction.N]: new Point(0, -1),
-        [Direction.NE]: new Point(1, -1),
-        [Direction.E]: new Point(1, 0),
-        [Direction.SE]: new Point(1, 1),
-        [Direction.S]: new Point(0, 1),
-        [Direction.SW]: new Point(-1, 1),
-        [Direction.W]: new Point(-1, 0),
-        [Direction.NW]: new Point(-1, -1)
-    };
+    public static rollProbability(probability: number): boolean {
+        return Math.random() < probability;
+    }
 }

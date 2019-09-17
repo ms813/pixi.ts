@@ -6,7 +6,8 @@ import {Tunneler} from '@app/game/map/generator/tunneler';
 
 export class TunnelerMapGenerator extends LevelMapGenerator {
 
-    private tunnelerParams: TunnelerParams[] = [];
+    private tunnelers: Tunneler[] = [];
+    public complete: boolean = false;
 
     constructor(width: number, height: number, tileset: string = 'map_tiles') {
         super(width, height, tileset);
@@ -15,7 +16,7 @@ export class TunnelerMapGenerator extends LevelMapGenerator {
     }
 
     withTunneler(tunnelerParams: TunnelerParams): TunnelerMapGenerator {
-        this.tunnelerParams.push(tunnelerParams);
+        this.tunnelers.push(new Tunneler(tunnelerParams));
         return this;
     }
 
@@ -34,14 +35,25 @@ export class TunnelerMapGenerator extends LevelMapGenerator {
         return this;
     }
 
-    public build(): LevelMap {
-        const tunnelers: Tunneler[] = this.tunnelerParams.map((params: TunnelerParams) => new Tunneler(params));
-        tunnelers.forEach(t => {
+    public step(): LevelMap {
+
+        this.tunnelers.forEach(t => {
             if (t.alive) {
                 t.step(this.map);
             }
         });
 
+        if (this.tunnelers.length === this.tunnelers.filter(t => !t.alive).length) {
+            this.complete = true;
+        }
+        return this.map;
+    }
+
+    public build(): LevelMap {
+        while (this.tunnelers.find(t => t.alive)) {
+            this.step();
+        }
+        this.complete = true;
         return this.map;
     }
 }

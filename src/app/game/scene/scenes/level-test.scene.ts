@@ -3,7 +3,7 @@ import {SimpleMapGenerator} from '@app/game/map';
 import {Key} from '@app/game/keyboard.event';
 import {Player} from '@app/game/actor/player';
 import {Deck} from '@app/game/deck';
-import {Direction} from '@app/game/util';
+import {DirectionHelper} from '@app/game/util';
 import {HandView} from '@app/game/deck/hand.view';
 import {Enemy} from '@app/game/actor/enemy';
 import {Game} from '@app/game/game';
@@ -84,38 +84,41 @@ export class LevelTestScene extends Scene {
 
 
     private getKeybindings(): Key[] {
-        const {N, NE, E, SE, S, SW, W, NW} = Direction;
+        const {
+            NORTH, NORTH_EAST, EAST, SOUTH_EAST,
+            SOUTH, SOUTH_WEST, WEST, NORTH_WEST
+        } = DirectionHelper;
         const {player} = this.map;
         return [
             // move map
-            Key.create('ArrowUp', () => this.map.scroll(S)),
-            Key.create('ArrowDown', () => this.map.scroll(N)),
-            Key.create('ArrowLeft', () => this.map.scroll(E)),
-            Key.create('ArrowRight', () => this.map.scroll(W)),
+            Key.create('ArrowUp', () => this.map.scroll(SOUTH)),
+            Key.create('ArrowDown', () => this.map.scroll(NORTH)),
+            Key.create('ArrowLeft', () => this.map.scroll(EAST)),
+            Key.create('ArrowRight', () => this.map.scroll(WEST)),
 
             // move player
             Key.create('Numpad8', () =>
-                player.move(N, this.map.isLegalMove(player.x, player.y, N))
+                player.move(NORTH, this.map.isLegalMove(player.x, player.y, NORTH))
             ),
             Key.create('Numpad9', () =>
-                player.move(NE, this.map.isLegalMove(player.x, player.y, NE))
+                player.move(NORTH_EAST, this.map.isLegalMove(player.x, player.y, NORTH_EAST))
             ),
             Key.create('Numpad6', () =>
-                player.move(E, this.map.isLegalMove(player.x, player.y, E))
+                player.move(EAST, this.map.isLegalMove(player.x, player.y, EAST))
             ),
             Key.create('Numpad3', () =>
-                player.move(SE, this.map.isLegalMove(player.x, player.y, SE))
+                player.move(SOUTH_EAST, this.map.isLegalMove(player.x, player.y, SOUTH_EAST))
             ),
             Key.create('Numpad2', () =>
-                player.move(S, this.map.isLegalMove(player.x, player.y, S))),
+                player.move(SOUTH, this.map.isLegalMove(player.x, player.y, SOUTH))),
             Key.create('Numpad1', () =>
-                player.move(SW, this.map.isLegalMove(player.x, player.y, SW))
+                player.move(SOUTH_WEST, this.map.isLegalMove(player.x, player.y, SOUTH_WEST))
             ),
             Key.create('Numpad4', () =>
-                player.move(W, this.map.isLegalMove(player.x, player.y, W))
+                player.move(WEST, this.map.isLegalMove(player.x, player.y, WEST))
             ),
             Key.create('Numpad7', () =>
-                player.move(NW, this.map.isLegalMove(player.x, player.y, NW))
+                player.move(NORTH_WEST, this.map.isLegalMove(player.x, player.y, NORTH_WEST))
             ),
             Key.create('Numpad5', () => player.doTurn(player.moveSpeed)),
             Key.create('Enter', () => this.map.centerOn(this.player.x, this.player.y))

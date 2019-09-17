@@ -1,8 +1,6 @@
-import {Direction} from '@app/game/util/direction.enum';
 import {TILE_SIZE} from '@app/game/game';
 import {HealthBar} from '@app/game/actor/health-bar';
-import {Sprite} from 'pixi.js';
-import {Utils} from '@app/game/util/utils';
+import {Point, Sprite} from 'pixi.js';
 
 export abstract class Movable {
 
@@ -23,10 +21,10 @@ export abstract class Movable {
 
     abstract doTurn(delay?: number): Movable;
 
-    move(direction: Direction, isLegalMove: boolean) {
+    move(direction: Point, isLegalMove: boolean) {
         const prevPos = {x: this.x, y: this.y};
         if (isLegalMove) {
-            const {x: dx, y: dy} = Utils.direction[direction];
+            const {x: dx, y: dy} = direction;
             this.x += dx;
             this.y += dy;
         }

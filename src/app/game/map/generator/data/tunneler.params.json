@@ -8,7 +8,7 @@
       "changeProbability": 0.01
     },
     "deathProbability": 0.01,
-    "turnProbability": 0.01,
+    "turnProbability": 0.1,
     "spawn": {
       "tunnelers": [
         {

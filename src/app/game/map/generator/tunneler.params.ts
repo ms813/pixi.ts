@@ -1,10 +1,10 @@
-import {Direction} from '@app/game/util/direction.enum';
+import {Point} from 'pixi.js';
 
 export interface TunnelerParams {
     id: string
     x: number,
     y: number,
-    direction: Direction,
+    direction: Point,
     width: {
         initial: number;
         min: number;

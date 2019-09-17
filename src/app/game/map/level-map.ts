@@ -4,7 +4,6 @@ import {Tile, TileType} from '@app/game/map/tile';
 import {Enemy, Movable, Player} from '@app/game/actor';
 import {DragEndData} from '@app/game/card';
 import {Game, TILE_SIZE} from '@app/game/game';
-import {Direction} from '@app/game/util/direction.enum';
 import {Container, interaction, loader, loaders, Point, Rectangle, Sprite} from 'pixi.js';
 import InteractionData = interaction.InteractionData;
 import InteractionEvent = interaction.InteractionEvent;
@@ -160,30 +159,20 @@ export class LevelMap extends Container {
     }
 
     public isInBounds(x: number, y: number): boolean {
-        return x >= 0 && y >= 0 && x < this.width && y < this.height;
+        return x >= 1 && y >= 1 && x < this.width - 1 && y < this.height - 1;
     }
 
-    isLegalMove(x: number, y: number, direction: Direction): boolean {
-        const canMove = {
-            up: y > 0,
-            right: x < this.width - 1,
-            down: y < this.height - 1,
-            left: x > 0
-        };
+    isLegalMove(x: number, y: number, direction: Point): boolean {
 
-        const isMoveLegal = {
-            [Direction.N]: () => canMove.up && this.isPassable(x, y - 1),
-            [Direction.NE]: () => canMove.up && canMove.right && this.isPassable(x + 1, y - 1),
-            [Direction.E]: () => canMove.right && this.isPassable(x + 1, y),
-            [Direction.SE]: () => canMove.right && canMove.down && this.isPassable(x + 1, y + 1),
-            [Direction.S]: () => canMove.down && this.isPassable(x, y + 1),
-            [Direction.SW]: () => canMove.down && canMove.left && this.isPassable(x - 1, y + 1),
-            [Direction.W]: () => canMove.left && this.isPassable(x - 1, y),
-            [Direction.NW]: () => canMove.left && canMove.up && this.isPassable(x - 1, y - 1)
-        };
+        const passable = this.isPassable(x + direction.x, y + direction.y);
+        if (!passable) {
+            return false;
+        }
 
-        console.debug(`isLegal: (${x}, ${y}), ${Direction[direction]}, ${isMoveLegal[direction]()}`);
-        return isMoveLegal[direction]();
+        const inBounds = this.isInBounds(x + direction.x, y + direction.y);
+
+        console.debug(`isLegal: (${x}, ${y}), direction: ${direction}, inBounds: ${inBounds}, passable: ${passable}`);
+        return passable && inBounds;
     }
 
     public showRange = (x: number, y: number, range: number): void => {
@@ -243,10 +232,9 @@ export class LevelMap extends Container {
         return this.enemies.find((e: Enemy) => e.x === x && e.y === y);
     }
 
-    public scroll(direction: Direction): LevelMap {
-        let {x: dx, y: dy} = Utils.direction[direction];
-        this.x += dx * TILE_SIZE;
-        this.y += dy * TILE_SIZE;
+    public scroll(direction: Point): LevelMap {
+        this.x += direction.x * TILE_SIZE;
+        this.y += direction.y * TILE_SIZE;
         return this;
     }
 
@@ -259,9 +247,6 @@ export class LevelMap extends Container {
 
         const dx = (cx - x * TILE_SIZE);
         const dy = (cy - y * TILE_SIZE);
-        // this.x = dx;
-        // this.y = dy;
-        // return {x: dx, y: dy};
         return this.snapToDragLimit(dx, dy);
     }
 

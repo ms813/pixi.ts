@@ -1,9 +1,8 @@
 import {Movable} from '@app/game/actor/movable';
 import {Game} from '@app/game/game';
 import {LevelMap} from '@app/game/map/level-map';
-import {Direction} from '@app/game/util/direction.enum';
-import {Utils} from '@app/game/util/utils';
-import {loader, Sprite} from 'pixi.js';
+import {loader, Point, Sprite} from 'pixi.js';
+import {DirectionHelper} from '@app/game/util';
 
 export class Enemy extends Movable {
 
@@ -18,10 +17,10 @@ export class Enemy extends Movable {
 
     doTurn(delay: number = this.moveSpeed): Enemy {
         const {x, y} = this;
-        let dir: Direction;
+        let dir: Point;
         do {
-            dir = Utils.randomEnum(Direction);
-
+            dir = DirectionHelper.random();
+            console.log('enemy move: ', dir);
         } while (!this.map.isLegalMove(x, y, dir));
 
         this.move(dir, true);

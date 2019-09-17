@@ -1,3 +1,0 @@
-export enum Orientation {
-    HORIZONTAL, VERTICAL, DIAGONAL_NW_SE, DIAGONAL_SW_NE
-}
