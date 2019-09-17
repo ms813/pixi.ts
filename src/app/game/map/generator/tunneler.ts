@@ -1,13 +1,13 @@
 import {TunnelerParams} from '@app/game/map/generator/tunneler.params';
 import {LevelMap} from '@app/game/map';
 import {TileType} from '@app/game/map/tile';
-import {DirectionHelper, Utils} from '@app/game/util/';
+import {Utils} from '@app/game/util/';
 import {Point} from 'pixi.js';
 
 export class Tunneler {
 
     public alive: boolean = true;
-    private age: number = 0;
+    public age: number = 0;
     private x: number;
     private y: number;
     private direction: Point;
@@ -24,27 +24,41 @@ export class Tunneler {
     public step(map: LevelMap): LevelMap {
         console.debug(`Tunneler::step - begin step ${this.age}`);
         if (this.age === 0) {
-            this.excavateSquare(map, 5);
+            this.excavateSquare(map, this.width + Utils.randomInt(this.params.junction.minPadding, this.params.junction.maxPadding));
         } else {
-            console.log(this.direction);
-            const {x: dx, y: dy} = this.direction;
+            let {x: dx, y: dy} = this.direction;
+
+            while (!map.isInBounds(this.x + dx, this.y + dy)) {
+                console.log(`Tunneler::step - out of bounds at (${this.x}, ${this.y}), changing direction`);
+                this.direction = this.changeDirection(this.direction);
+                dx = this.direction.x;
+                dy = this.direction.y;
+            }
+
             this.x += dx;
             this.y += dy;
 
-            if (!map.isInBounds(this.x, this.y)) {
-                console.log(`Tunneler::step - out of bounds at (${this.x}, ${this.y}), killing tunneler`);
-                this.alive = false;
-                return map;
-            }
-
             if (Utils.rollProbability(this.params.deathProbability)) {
-                console.log(`Tunneler::step - rolled death probability, killing tunneler`);
+                console.log(`Tunneler::step - died of old age after ${this.age} steps`);
                 this.alive = false;
                 return map;
             }
 
             if (Utils.rollProbability(this.params.turnProbability)) {
                 this.excavateJunction(map);
+            }
+
+            if (Utils.rollProbability(this.params.width.changeProbability)) {
+                let thicker;
+                if (this.width >= this.params.width.max) {
+                    thicker = false;
+                } else if (this.width <= this.params.width.min) {
+                    thicker = true;
+                } else {
+                    thicker = Utils.randomBoolean();
+                }
+
+                this.width += thicker ? 2 : -2;
             }
 
             this.digTunnel(map);
@@ -58,35 +72,50 @@ export class Tunneler {
         const oddEven = radius % 2 === 0 ? 0 : 1;
         for (let i = this.x - radius + oddEven; i < this.x + radius; i++) {
             for (let j = this.y - radius + 1; j < this.y + radius; j++) {
-                map.tiles[map.coordsToIndex(i, j)].type = TileType.FLOOR;
+                if (map.isInBounds(i, j)) {
+                    map.tiles[map.coordsToIndex(i, j)].type = TileType.FLOOR;
+                }
             }
         }
     }
 
+    private changeDirection(dir: Point): Point {
+        return new Point(dir.y * (Utils.randomBoolean() ? 1 : -1), dir.x * (Utils.randomBoolean() ? 1 : -1));
+    }
+
     private excavateJunction(map: LevelMap): boolean {
-        console.log(`Tunneler::excavateJunction`);
-        let oldDirection: Point = this.direction;
-        while (oldDirection === this.direction) {
-            this.direction = DirectionHelper.random('cardinal');
+        console.debug(`Tunneler::excavateJunction at (${this.x}, ${this.y})`);
+        this.direction = this.changeDirection(this.direction);
+        if (Utils.rollProbability(this.params.junction.probability)) {
+            const {junction: j} = this.params;
+            this.excavateSquare(map, this.width + Utils.randomInt(j.minPadding, j.maxPadding));
         }
-        console.log(this.direction);
-        this.excavateSquare(map, 3);
+
         return true;
     }
 
     private digTunnel(map: LevelMap): boolean {
-        console.log('Tunneler::digTunnel');
-        if (this.width % 2 === 0) {
-            // width is even
-        } else {
+        // width is even
+        let h: number = this.width / 2;
+        let o: number = 1;
+
+        if (this.width % 2 !== 0) {
             // width is odd
-            const h = (this.width - 1) / 2;
-            for (let i = -h; i <= h; i++) {
-                if (this.direction === DirectionHelper.NORTH || this.direction === DirectionHelper.SOUTH) {
-                    map.tiles[map.coordsToIndex(this.x + i, this.y)].type = TileType.FLOOR;
-                } else if (this.direction === DirectionHelper.EAST || this.direction === DirectionHelper.WEST) {
-                    map.tiles[map.coordsToIndex(this.x, this.y + i)].type = TileType.FLOOR;
-                }
+            h = (this.width - 1) / 2;
+            o = 0;
+        }
+
+        for (let i = -h + o; i <= h; i++) {
+            let {x, y} = this;
+            if (this.direction.x === 0) {
+                x += i;
+            } else if (this.direction.y === 0) {
+                y += i;
+            }
+
+            if (map.isInBounds(x, y)) {
+                console.debug(`Tunneler::digTunnel - (${x}, ${y})`);
+                map.tiles[map.coordsToIndex(x, y)].type = TileType.FLOOR;
             }
         }
         return true;

@@ -4,11 +4,16 @@
     "width": {
       "initial": 3,
       "min": 1,
-      "max": 5,
-      "changeProbability": 0.01
+      "max": 7,
+      "changeProbability": 0.02
     },
-    "deathProbability": 0.01,
-    "turnProbability": 0.1,
+    "junction": {
+      "maxPadding": 3,
+      "minPadding": 0,
+      "probability": 0.3
+    },
+    "deathProbability": 0.002,
+    "turnProbability": 0.02,
     "spawn": {
       "tunnelers": [
         {

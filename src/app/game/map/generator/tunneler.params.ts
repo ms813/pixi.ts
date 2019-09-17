@@ -11,6 +11,11 @@ export interface TunnelerParams {
         max: number;
         changeProbability: number;
     },
+    junction: {
+        maxPadding: number
+        minPadding: number,
+        probability: number
+    }
     spawn: {
         tunnelers: {
             probability: number,

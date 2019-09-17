@@ -7,6 +7,10 @@ export class Utils {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     };
 
+    public static randomBoolean(): boolean {
+        return Math.random() < 0.5;
+    }
+
     public static randomEnum<T>(anEnum: T): T[keyof T] {
         const enumValues = Object.keys(anEnum)
         .map(n => Number.parseInt(n))

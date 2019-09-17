@@ -3,6 +3,7 @@ import {TileType} from '@app/game/map/tile';
 import {TunnelerParams} from '@app/game/map/generator/tunneler.params';
 import {LevelMap} from '@app/game/map';
 import {Tunneler} from '@app/game/map/generator/tunneler';
+import {Point} from 'pixi.js';
 
 export class TunnelerMapGenerator extends LevelMapGenerator {
 
@@ -15,8 +16,12 @@ export class TunnelerMapGenerator extends LevelMapGenerator {
         this.map = this.init(this.map, TileType.WALL);
     }
 
-    withTunneler(tunnelerParams: TunnelerParams): TunnelerMapGenerator {
-        this.tunnelers.push(new Tunneler(tunnelerParams));
+    withTunneler(tunnelerParams: TunnelerParams, x?: number, y?: number, direction?: Point): TunnelerMapGenerator {
+        const params: TunnelerParams = Object.assign({}, tunnelerParams);
+        params.x = x;
+        params.y = y;
+        params.direction = direction;
+        this.tunnelers.push(new Tunneler(params));
         return this;
     }
 
@@ -45,6 +50,8 @@ export class TunnelerMapGenerator extends LevelMapGenerator {
 
         if (this.tunnelers.length === this.tunnelers.filter(t => !t.alive).length) {
             this.complete = true;
+            const maxAge = Math.max(...this.tunnelers.map(t => t.age));
+            console.log(`TunnelerMapGenerator::step - Mapgen finished after ${maxAge} steps`);
         }
         return this.map;
     }
